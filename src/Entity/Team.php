@@ -27,6 +27,9 @@ class Team
     #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'team')]
     private Collection $players;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $logoUrl = null;
+
     public function __construct()
     {
         $this->players = new ArrayCollection();
@@ -87,6 +90,18 @@ class Team
                 $player->setTeam(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getLogoUrl(): ?string
+    {
+        return $this->logoUrl;
+    }
+
+    public function setLogoUrl(?string $logoUrl): static
+    {
+        $this->logoUrl = $logoUrl;
 
         return $this;
     }

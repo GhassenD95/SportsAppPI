@@ -137,7 +137,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        $roles[] = 'ROLE_ATHLETE';
+        if (empty($roles)) {
+            $roles[] = 'ROLE_USER';
+        }
         return array_unique($roles);
     }
 
@@ -176,7 +178,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     public function getUsername(): string
@@ -254,5 +256,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->team = $team;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->getFullName() ?: '';
     }
 }

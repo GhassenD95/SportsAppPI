@@ -22,7 +22,7 @@ security:
                 login_path: app_login
                 check_path: app_login
                 enable_csrf: true
-                default_target_path: app_dashboard  # Add your target route after login
+                default_target_path: admin_team_index  # Add your target route after login
                 # Uncomment if your form uses different field names:
                 # username_parameter: email
                 # password_parameter: password
