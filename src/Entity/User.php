@@ -58,6 +58,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $teams;
 
     #[ORM\ManyToOne(inversedBy: 'players')]
+    #[ORM\JoinColumn(onDelete: "SET NULL")]
     private ?Team $team = null;
 
     public function __construct()

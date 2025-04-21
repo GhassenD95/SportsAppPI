@@ -19,6 +19,7 @@ class Team
     private ?string $name = null;
 
     #[ORM\ManyToOne(inversedBy: 'teams')]
+    #[ORM\JoinColumn(onDelete: "SET NULL")]
     private ?User $coach = null;
 
     /**
