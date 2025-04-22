@@ -61,6 +61,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(onDelete: "SET NULL")]
     private ?Team $team = null;
 
+    #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
+    private ?PasswordResetToken $passwordResetToken = null;
+
     public function __construct()
     {
         $this->created_at = new \DateTimeImmutable();
@@ -262,5 +265,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __toString(): string
     {
         return $this->getFullName() ?: '';
+    }
+
+    public function getPasswordResetToken(): ?PasswordResetToken
+    {
+        return $this->passwordResetToken;
+    }
+
+    public function setPasswordResetToken(PasswordResetToken $passwordResetToken): static
+    {
+        // set the owning side of the relation if necessary
+        if ($passwordResetToken->getUser() !== $this) {
+            $passwordResetToken->setUser($this);
+        }
+
+        $this->passwordResetToken = $passwordResetToken;
+
+        return $this;
     }
 }

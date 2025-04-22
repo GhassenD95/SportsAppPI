@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello PasswordResetController!{% endblock %}
+
+{% block body %}
+    <p>Hello!</p>
+    <p>Click here to set your password:</p>
+    <a href="{{ url('app_password_reset', {token: token}) }}">
+        Set Password
+    </a>
+    <p>This link expires {{ expires_at|date('Y-m-d H:i') }}.</p>
+{% endblock %}
