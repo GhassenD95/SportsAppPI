@@ -6,6 +6,7 @@ use App\Repository\TeamRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TeamRepository::class)]
 class Team
@@ -30,6 +31,11 @@ class Team
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $logoUrl = null;
+
+
+
+    #[ORM\Column(length: 255)]
+    private ?string $sport = null;
 
     public function __construct()
     {
@@ -103,6 +109,18 @@ class Team
     public function setLogoUrl(?string $logoUrl): static
     {
         $this->logoUrl = $logoUrl;
+
+        return $this;
+    }
+
+    public function getSport(): ?string
+    {
+        return $this->sport;
+    }
+
+    public function setSport(string $sport): static
+    {
+        $this->sport = $sport;
 
         return $this;
     }
