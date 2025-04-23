@@ -3,10 +3,29 @@
 {% block title %}Hello PasswordResetController!{% endblock %}
 
 {% block body %}
-    <p>Hello!</p>
-    <p>Click here to set your password:</p>
-    <a href="{{ url('app_password_reset', {token: token}) }}">
-        Set Password
-    </a>
-    <p>This link expires {{ expires_at|date('Y-m-d H:i') }}.</p>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Reset Password</h3>
+                    </div>
+                    <div class="card-body">
+                        {{ form_start(form, {'attr': {'data-turbo': 'false'}}) }}
+                        {{ form_row(form.plainPassword.first, {
+                            'label': 'New Password'
+                        }) }}
+                        {{ form_row(form.plainPassword.second, {
+                            'label': 'Repeat Password'
+                        }) }}
+
+                        <button type="submit" >
+                            Update Password
+                        </button>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
