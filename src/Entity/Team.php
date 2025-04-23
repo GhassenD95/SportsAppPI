@@ -35,6 +35,7 @@ class Team
 
 
     #[ORM\Column(length: 255)]
+    #[Assert\Choice(choices: ['football', 'basketball', 'volleyball'], message: 'Choose a valid sport.')]
     private ?string $sport = null;
 
     public function __construct()

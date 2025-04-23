@@ -5,7 +5,6 @@ namespace App\Controller\Admin;
 
 use App\Entity\Team;
 use App\Entity\User;
-use App\Enum\Sport;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
