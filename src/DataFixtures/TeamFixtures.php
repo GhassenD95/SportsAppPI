@@ -16,7 +16,16 @@ class TeamFixtures extends Fixture implements DependentFixtureInterface
         $sports = ['football', 'basketball', 'volleyball'];
         $faker = Factory::create();
 
-        // Create 6 teams (2 per sport)
+        // Get all athlete references that exist
+        $athleteReferences = [];
+        $i = 0;
+        while ($this->hasReference('athlete_' . $i, User::class)) {
+            $athleteReferences[] = 'athlete_' . $i;
+            $i++;
+        }
+
+        // Create teams (2 per sport)
+        $teams = [];
         for ($i = 0; $i < 6; $i++) {
             $sport = $sports[$i % 3];
             $team = new Team();
@@ -24,12 +33,28 @@ class TeamFixtures extends Fixture implements DependentFixtureInterface
             $team->setSport($sport);
             $team->setLogoUrl($this->getTeamLogo($sport));
 
-            // Correct reference usage per Symfony docs
+            // Assign random coach (from coach_0 to coach_4)
             $coachRef = 'coach_' . rand(0, 4);
             $team->setCoach($this->getReference($coachRef, User::class));
 
             $manager->persist($team);
+            $teams[] = $team;
             $this->addReference('team_' . $i, $team, Team::class);
+        }
+
+        // Randomly assign athletes to teams
+        if (!empty($athleteReferences)) {
+            foreach ($athleteReferences as $athleteRef) {
+                /** @var User $athlete */
+                $athlete = $this->getReference($athleteRef, User::class);
+
+                // Assign to random team
+                $randomTeam = $teams[array_rand($teams)];
+                $randomTeam->addPlayer($athlete);
+                $athlete->setTeam($randomTeam);
+
+                $manager->persist($athlete);
+            }
         }
 
         $manager->flush();
@@ -46,12 +71,12 @@ class TeamFixtures extends Fixture implements DependentFixtureInterface
         $template = $formats[$sport][array_rand($formats[$sport])];
         return str_replace('{city}', $faker->city(), $template);
     }
-
-    private function getTeamLogo(string $sport): string
+    private function getTeamLogo(string $teamName): string
     {
-        $query = urlencode($sport . ' team logo');
-        return "https://source.unsplash.com/random/400x400/?{$query}";
+        $name = urlencode($teamName);
+        return "https://ui-avatars.com/api/?name=$name&background=random&color=fff&size=400";
     }
+
 
     public function getDependencies(): array
     {
