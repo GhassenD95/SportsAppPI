@@ -88,6 +88,7 @@ class UserCrudController extends AbstractCrudController
 
         $this->hashPassword($user);
         parent::persistEntity($entityManager, $user);
+
         //send an email with update password form
         $token = new PasswordResetToken($user);
         $entityManager->persist($token);
