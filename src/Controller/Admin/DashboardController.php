@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Controller\UserController;
+use App\Entity\Facility;
 use App\Entity\Team;
 use App\Entity\User;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
@@ -56,5 +57,6 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
         yield MenuItem::linkToCrud('Users', 'fas fa-list', User::class);
         yield MenuItem::linkToCrud('Teams', 'fas fa-list', Team::class);
+        yield MenuItem::linkToCrud('Facilities', 'fas fa-list', Facility::class);
     }
 }

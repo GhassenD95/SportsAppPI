@@ -64,11 +64,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
     private ?PasswordResetToken $passwordResetToken = null;
 
+    /**
+     * @var Collection<int, Facility>
+     */
+    #[ORM\OneToMany(targetEntity: Facility::class, mappedBy: 'manager')]
+    private Collection $facilities;
+
     public function __construct()
     {
         $this->created_at = new \DateTimeImmutable();
         $this->updated_at = new \DateTimeImmutable();
         $this->teams = new ArrayCollection();
+        $this->facilities = new ArrayCollection();
     }
 
     #[ORM\PreUpdate]
@@ -280,6 +287,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         $this->passwordResetToken = $passwordResetToken;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Facility>
+     */
+    public function getFacilities(): Collection
+    {
+        return $this->facilities;
+    }
+
+    public function addFacility(Facility $facility): static
+    {
+        if (!$this->facilities->contains($facility)) {
+            $this->facilities->add($facility);
+            $facility->setManager($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFacility(Facility $facility): static
+    {
+        if ($this->facilities->removeElement($facility)) {
+            // set the owning side to null (unless already changed)
+            if ($facility->getManager() === $this) {
+                $facility->setManager(null);
+            }
+        }
 
         return $this;
     }
