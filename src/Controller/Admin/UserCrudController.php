@@ -92,18 +92,19 @@ class UserCrudController extends AbstractCrudController
         $token = new PasswordResetToken($user);
         $entityManager->persist($token);
         $entityManager->flush();
-
         $email = (new TemplatedEmail())
-            ->from('no-reply@yoursportsapp.com')
+            ->from('noreply@yourdomain.com')
             ->to($user->getEmail())
-            ->subject('Reset Your Password')
-            ->htmlTemplate('password_reset/index.html.twig')
+            ->subject('Set Your Password')
+            ->htmlTemplate('email/password_reset.html.twig')
             ->context([
+                'user' => $user,
                 'token' => $token->getToken(),
-                'expires_at' => $token->getExpiresAt()
+                'expires_at' => $token->getExpiresAt(),
             ]);
 
         $this->mailer->send($email);
+
 
 
     }
