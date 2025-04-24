@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Enum\Sport;
 use App\Repository\FacilityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: FacilityRepository::class)]
@@ -28,6 +30,17 @@ class Facility
 
     #[ORM\Column]
     private array $sports = [];
+
+    /**
+     * @var Collection<int, Equipment>
+     */
+    #[ORM\OneToMany(targetEntity: Equipment::class, mappedBy: 'facility')]
+    private Collection $equipements;
+
+    public function __construct()
+    {
+        $this->equipements = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -92,6 +105,36 @@ class Facility
         // Validate against enum values
         $validSports = Sport::values();
         $this->sports = array_filter($sports, fn($sport) => in_array($sport, $validSports));
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Equipment>
+     */
+    public function getEquipements(): Collection
+    {
+        return $this->equipements;
+    }
+
+    public function addEquipement(Equipment $equipement): static
+    {
+        if (!$this->equipements->contains($equipement)) {
+            $this->equipements->add($equipement);
+            $equipement->setFacility($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEquipement(Equipment $equipement): static
+    {
+        if ($this->equipements->removeElement($equipement)) {
+            // set the owning side to null (unless already changed)
+            if ($equipement->getFacility() === $this) {
+                $equipement->setFacility(null);
+            }
+        }
 
         return $this;
     }

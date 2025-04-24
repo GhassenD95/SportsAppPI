@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Controller\UserController;
+use App\Entity\Equipment;
 use App\Entity\Facility;
 use App\Entity\Team;
 use App\Entity\User;
@@ -58,5 +59,6 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Users', 'fas fa-list', User::class);
         yield MenuItem::linkToCrud('Teams', 'fas fa-list', Team::class);
         yield MenuItem::linkToCrud('Facilities', 'fas fa-list', Facility::class);
+        yield MenuItem::linkToCrud('Equipment', 'fas fa-list', Equipment::class);
     }
 }

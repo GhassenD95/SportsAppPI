@@ -38,9 +38,16 @@ class Team
     #[Assert\Choice(choices: ['football', 'basketball', 'volleyball'], message: 'Choose a valid sport.')]
     private ?string $sport = null;
 
+    /**
+     * @var Collection<int, Equipment>
+     */
+    #[ORM\OneToMany(targetEntity: Equipment::class, mappedBy: 'team')]
+    private Collection $equipements;
+
     public function __construct()
     {
         $this->players = new ArrayCollection();
+        $this->equipements = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -122,6 +129,36 @@ class Team
     public function setSport(string $sport): static
     {
         $this->sport = $sport;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Equipment>
+     */
+    public function getEquipements(): Collection
+    {
+        return $this->equipements;
+    }
+
+    public function addEquipement(Equipment $equipement): static
+    {
+        if (!$this->equipements->contains($equipement)) {
+            $this->equipements->add($equipement);
+            $equipement->setTeam($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEquipement(Equipment $equipement): static
+    {
+        if ($this->equipements->removeElement($equipement)) {
+            // set the owning side to null (unless already changed)
+            if ($equipement->getTeam() === $this) {
+                $equipement->setTeam(null);
+            }
+        }
 
         return $this;
     }
