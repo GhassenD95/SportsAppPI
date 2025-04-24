@@ -44,10 +44,17 @@ class Team
     #[ORM\OneToMany(targetEntity: Equipment::class, mappedBy: 'team')]
     private Collection $equipements;
 
+    /**
+     * @var Collection<int, Tournament>
+     */
+    #[ORM\ManyToMany(targetEntity: Tournament::class, mappedBy: 'teams')]
+    private Collection $tournaments;
+
     public function __construct()
     {
         $this->players = new ArrayCollection();
         $this->equipements = new ArrayCollection();
+        $this->tournaments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -161,5 +168,37 @@ class Team
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Tournament>
+     */
+    public function getTournaments(): Collection
+    {
+        return $this->tournaments;
+    }
+
+    public function addTournament(Tournament $tournament): static
+    {
+        if (!$this->tournaments->contains($tournament)) {
+            $this->tournaments->add($tournament);
+            $tournament->addTeam($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTournament(Tournament $tournament): static
+    {
+        if ($this->tournaments->removeElement($tournament)) {
+            $tournament->removeTeam($this);
+        }
+
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->name;
     }
 }

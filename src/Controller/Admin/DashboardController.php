@@ -6,6 +6,7 @@ use App\Controller\UserController;
 use App\Entity\Equipment;
 use App\Entity\Facility;
 use App\Entity\Team;
+use App\Entity\Tournament;
 use App\Entity\User;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
@@ -60,5 +61,6 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Teams', 'fas fa-list', Team::class);
         yield MenuItem::linkToCrud('Facilities', 'fas fa-list', Facility::class);
         yield MenuItem::linkToCrud('Equipment', 'fas fa-list', Equipment::class);
+        yield MenuItem::linkToCrud('Tournaments', 'fas fa-list', Tournament::class);
     }
 }
