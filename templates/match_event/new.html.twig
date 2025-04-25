@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New MatchEvent{% endblock %}
+
+{% block body %}
+    <h1>Create new MatchEvent</h1>
+
+    {{ include('match_event/_form.html.twig') }}
+
+    <a href="{{ path('app_match_event_index') }}">back to list</a>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}MatchEvent{% endblock %}
+
+{% block body %}
+    <h1>MatchEvent</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ match_event.id }}</td>
+            </tr>
+            <tr>
+                <th>Date</th>
+                <td>{{ match_event.date ? match_event.date|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Location</th>
+                <td>{{ match_event.location }}</td>
+            </tr>
+            <tr>
+                <th>AwayTeam</th>
+                <td>{{ match_event.awayTeam ? match_event.awayTeam|json_encode : '' }}</td>
+            </tr>
+            <tr>
+                <th>Score</th>
+                <td>{{ match_event.score ? match_event.score|json_encode : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_match_event_index') }}">back to list</a>
+
+    <a href="{{ path('app_match_event_edit', {'id': match_event.id}) }}">edit</a>
+
+    {{ include('match_event/_delete_form.html.twig') }}
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}MatchEvent index{% endblock %}
+
+{% block body %}
+    <h1>MatchEvent index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Date</th>
+                <th>Location</th>
+                <th>AwayTeam</th>
+                <th>Score</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for match_event in match_events %}
+            <tr>
+                <td>{{ match_event.id }}</td>
+                <td>{{ match_event.date ? match_event.date|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ match_event.location }}</td>
+                <td>{{ match_event.awayTeam ? match_event.awayTeam|json_encode : '' }}</td>
+                <td>{{ match_event.score ? match_event.score|json_encode : '' }}</td>
+                <td>
+                    <a href="{{ path('app_match_event_show', {'id': match_event.id}) }}">show</a>
+                    <a href="{{ path('app_match_event_edit', {'id': match_event.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_match_event_new') }}">Create new</a>
+{% endblock %}

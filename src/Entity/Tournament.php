@@ -31,9 +31,16 @@ class Tournament
     #[ORM\ManyToMany(targetEntity: Team::class, inversedBy: 'tournaments')]
     private Collection $teams;
 
+    /**
+     * @var Collection<int, MatchEvent>
+     */
+    #[ORM\OneToMany(targetEntity: MatchEvent::class, mappedBy: 'tournament')]
+    private Collection $matchEvents;
+
     public function __construct()
     {
         $this->teams = new ArrayCollection();
+        $this->matchEvents = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -103,5 +110,35 @@ class Tournament
     public function __toString(): string
     {
         return $this->name;
+    }
+
+    /**
+     * @return Collection<int, MatchEvent>
+     */
+    public function getMatchEvents(): Collection
+    {
+        return $this->matchEvents;
+    }
+
+    public function addMatchEvent(MatchEvent $matchEvent): static
+    {
+        if (!$this->matchEvents->contains($matchEvent)) {
+            $this->matchEvents->add($matchEvent);
+            $matchEvent->setTournament($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMatchEvent(MatchEvent $matchEvent): static
+    {
+        if ($this->matchEvents->removeElement($matchEvent)) {
+            // set the owning side to null (unless already changed)
+            if ($matchEvent->getTournament() === $this) {
+                $matchEvent->setTournament(null);
+            }
+        }
+
+        return $this;
     }
 }
