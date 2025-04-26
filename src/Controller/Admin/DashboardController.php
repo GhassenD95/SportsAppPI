@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Controller\UserController;
 use App\Entity\Equipment;
+use App\Entity\Exercise;
 use App\Entity\Facility;
 use App\Entity\MatchEvent;
 use App\Entity\Team;
@@ -64,5 +65,6 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Equipment', 'fas fa-list', Equipment::class);
         yield MenuItem::linkToCrud('Tournaments', 'fas fa-list', Tournament::class);
         yield MenuItem::linkToCrud('Matches', 'fas fa-list', MatchEvent::class);
+        yield MenuItem::linkToCrud('Exercises', 'fas fa-list', Exercise::class);
     }
 }
