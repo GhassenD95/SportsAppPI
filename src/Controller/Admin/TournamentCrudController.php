@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Tournament;
 use App\Entity\Team;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
@@ -28,7 +29,12 @@ class TournamentCrudController extends AbstractCrudController
             ->setDefaultSort(['start_date' => 'DESC'])
             ->showEntityActionsInlined();
     }
-
+    public function configureActions(Actions $actions): Actions
+    {
+        // This adds the "show" action to the index page
+        return $actions
+            ->add('index', 'detail');
+    }
     public function configureFields(string $pageName): iterable
     {
         return [

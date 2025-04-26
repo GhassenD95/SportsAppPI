@@ -156,7 +156,11 @@ class MatchEventCrudController extends AbstractCrudController
                 ]);
         } else {
             // Index and detail pages
-            yield DateTimeField::new('date')->setFormat('yyyy-MM-dd HH:mm');
+            yield IdField::new('id')->onlyOnIndex();
+            yield TextField::new('homeTeam.sport', 'Sport')
+                ->setSortable(true);
+            yield DateTimeField::new('date')
+                ->setFormat('yyyy-MM-dd HH:mm');
             yield TextField::new('location');
             yield AssociationField::new('homeTeam');
             yield AssociationField::new('tournament');

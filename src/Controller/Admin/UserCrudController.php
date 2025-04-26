@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\PasswordResetToken;
 use App\Entity\User;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
@@ -39,7 +40,12 @@ class UserCrudController extends AbstractCrudController
             ->setHelp('new', 'Leave password blank to auto-generate')
             ->setHelp('edit', 'Leave password blank to keep current password');
     }
-
+    public function configureActions(Actions $actions): Actions
+    {
+        // This adds the "show" action to the index page
+        return $actions
+            ->add('index', 'detail');
+    }
     public function configureFields(string $pageName): iterable
     {
         $passwordHelp = $pageName === Crud::PAGE_NEW

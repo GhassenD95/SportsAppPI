@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\Facility;
 use App\Enum\Sport;
 use Doctrine\ORM\QueryBuilder;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
@@ -18,7 +19,12 @@ class FacilityCrudController extends AbstractCrudController
     {
         return Facility::class;
     }
-
+    public function configureActions(Actions $actions): Actions
+    {
+        // This adds the "show" action to the index page
+        return $actions
+            ->add('index', 'detail');
+    }
     public function configureFields(string $pageName): iterable
     {
         return [

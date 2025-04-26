@@ -6,6 +6,7 @@ namespace App\Controller\Admin;
 use App\Entity\Team;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
@@ -24,7 +25,12 @@ class TeamCrudController extends AbstractCrudController
     {
         return Team::class;
     }
-
+    public function configureActions(Actions $actions): Actions
+    {
+        // This adds the "show" action to the index page
+        return $actions
+            ->add('index', 'detail');
+    }
     public function configureCrud(Crud $crud): Crud
     {
         return $crud

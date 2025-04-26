@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\Equipment;
 use App\Enum\EquipmentState;
 use App\Enum\EquipmentType;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
@@ -29,7 +30,12 @@ class EquipmentCrudController extends AbstractCrudController
             ->setPaginatorPageSize(20)
             ->setDefaultSort(['name' => 'ASC']);
     }
-
+    public function configureActions(Actions $actions): Actions
+    {
+        // This adds the "show" action to the index page
+        return $actions
+            ->add('index', 'detail');
+    }
     public function configureFields(string $pageName): iterable
     {
         return [
