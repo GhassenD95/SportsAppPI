@@ -37,8 +37,7 @@ class TeamCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('Team')
             ->setEntityLabelInPlural('Teams')
             ->setSearchFields(['name','coach.name','coach.lastname', 'players.name', 'sport'])
-            ->setDefaultSort(['name' => 'ASC'])
-            ->showEntityActionsInlined();
+            ->setDefaultSort(['name' => 'ASC']);
     }
 
     public function configureFields(string $pageName): iterable

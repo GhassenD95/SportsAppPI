@@ -8,6 +8,7 @@ use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use Symfony\Component\Filesystem\Filesystem;
 
 class ExerciseApiService
 {
@@ -68,7 +69,7 @@ class ExerciseApiService
         $response = $this->httpClient->request(
             'GET',
             self::API_BASE_URL.'/exercises',
-            ['headers' => $this->getHeaders(), 'query' => ['limit' => 1300]] // Added limit parameter
+            ['headers' => $this->getHeaders(), 'query' => ['limit' => 1300]]
         );
 
         $exercises = $response->toArray();
@@ -85,6 +86,7 @@ class ExerciseApiService
 
     /**
      * @param string $apiId
+     * @param string|null $uploadDir
      * @return array
      * @throws ClientExceptionInterface
      * @throws DecodingExceptionInterface
@@ -92,9 +94,8 @@ class ExerciseApiService
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function fetchExerciseDetails(string $apiId): array
+    public function fetchExerciseDetails(string $apiId, ?string $uploadDir = null): array
     {
-        // Convert ID to 4-digit format with leading zeros
         $formattedId = str_pad(ltrim($apiId, '0'), 4, '0', STR_PAD_LEFT);
 
         $response = $this->httpClient->request(
@@ -104,6 +105,29 @@ class ExerciseApiService
         );
 
         $data = $response->toArray();
+
+        // Download and save image if upload directory is provided
+        if ($uploadDir && isset($data['gifUrl'])) {
+            try {
+                $filesystem = new Filesystem();
+                $imageResponse = $this->httpClient->request('GET', $data['gifUrl']);
+
+                if (200 === $imageResponse->getStatusCode()) {
+                    if (!$filesystem->exists($uploadDir)) {
+                        $filesystem->mkdir($uploadDir);
+                    }
+
+                    $filename = 'exercise_'.$formattedId.'_'.md5(uniqid()).'.gif';
+                    $filePath = $uploadDir.'/'.$filename;
+                    $filesystem->dumpFile($filePath, $imageResponse->getContent());
+
+                    $data['gifUrl'] = '/uploads/exercises/'.$filename;
+                }
+            } catch (\Exception $e) {
+                // Log error but continue with remote URL
+                error_log('Failed to save exercise image: '.$e->getMessage());
+            }
+        }
 
         return [
             'id' => $data['id'],

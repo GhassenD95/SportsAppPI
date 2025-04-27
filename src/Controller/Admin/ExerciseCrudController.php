@@ -9,12 +9,13 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -23,7 +24,20 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class ExerciseCrudController extends AbstractCrudController
 {
-    public function __construct(private ExerciseApiService $exerciseApi) {}
+    private string $exerciseImageDirectory;
+    private const UPLOAD_PATH = '/uploads/exercises/';
+
+    public function __construct(
+        private readonly ExerciseApiService $exerciseApi,
+        string $projectDir
+    ) {
+        $this->exerciseImageDirectory = $projectDir . '/public' . self::UPLOAD_PATH;
+
+        // Create directory if it doesn't exist
+        if (!file_exists($this->exerciseImageDirectory)) {
+            mkdir($this->exerciseImageDirectory, 0777, true);
+        }
+    }
 
     public static function getEntityFqcn(): string
     {
@@ -53,76 +67,89 @@ class ExerciseCrudController extends AbstractCrudController
      */
     public function configureFields(string $pageName): iterable
     {
-        $fields = [];
+        yield IdField::new('id', 'ID')->onlyOnIndex();
+        yield IntegerField::new('apiId', 'API ID')->onlyOnIndex();
+        yield TextField::new('name');
+        yield TextField::new('target');
+        yield TextareaField::new('instructions')->setRequired(false);
 
-        // API Exercise Selection (only on forms)
-        if ($pageName === Crud::PAGE_NEW || $pageName === Crud::PAGE_EDIT) {
+        if (Crud::PAGE_INDEX === $pageName || Crud::PAGE_DETAIL === $pageName) {
+            yield ImageField::new('imageUrl')
+                ->setBasePath(self::UPLOAD_PATH);
+        } else {
+            yield ImageField::new('imageUrl')
+                ->setBasePath('')
+                ->setUploadDir('public/uploads/exercises')
+                ->setFormTypeOptions([
+                    'attr' => [
+                        'accept' => 'image/*',
+                    ],
+                ])
+                ->setRequired(false);
+            // No setUploadedFileNamePattern or setVirtualDir needed here for API image name saving
+            $apiExercises = $this->exerciseApi->getAllExerciseNames();
+            $choices = [];
+            foreach ($apiExercises as $ex) {
+                $choices[$ex['name'] . ' (' . $ex['bodyPart'] . ')'] = $ex['id'];
+            }
+            yield ChoiceField::new('apiId', 'Predefined Exercise')
+                ->setChoices($choices)
+                ->setLabel('API Exercise')
+                ->setHelp('Select an exercise from the API or fill the form manually')
+                ->setRequired(false)
+                ->setFormTypeOption('placeholder', 'Select an exercise from the API');
+
+        }
+
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
+    public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        if (!$entityInstance instanceof Exercise) {
+            return;
+        }
+
+        // If API exercise is selected
+        if ($entityInstance->getApiId() !== null) {
             try {
-                $apiExercises = $this->exerciseApi->getAllExerciseNames();
-                $choices = [];
-                foreach ($apiExercises as $ex) {
-                    $choices[$ex['name'] . ' (' . $ex['bodyPart'] . ')'] = $ex['id'];
+                $apiData = $this->exerciseApi->fetchExerciseDetails(
+                    (string) $entityInstance->getApiId(),
+                    $this->exerciseImageDirectory
+                );
+
+                $entityInstance->setName($apiData['name']);
+                $entityInstance->setTarget($apiData['target']);
+                $entityInstance->setInstructions(implode("\n", $apiData['instructions']));
+
+                // Save only the filename for API images
+                if ($apiData['gifUrl']) {
+                    $pathParts = pathinfo($apiData['gifUrl']);
+                    $entityInstance->setImageUrl($pathParts['basename']);
+                } else {
+                    $entityInstance->setImageUrl(null);
                 }
 
-                $fields[] = ChoiceField::new('apiId', 'Predefined Exercise')
-                    ->setChoices($choices)
-                    ->setRequired(false)
-                    ->setHelp('Select to auto-fill all details from API')
-                    ->onlyOnForms();
-
             } catch (\Exception $e) {
-                $this->addFlash('warning', 'Could not load exercises from API. You can still create custom exercises.');
+                $this->addFlash('error', 'Failed to fetch exercise details from API. Using manual data instead.');
+                error_log('Failed to fetch exercise details: ' . $e->getMessage());
             }
         }
-
-        // Exercise Details - simple display on detail page
-        if ($pageName === Crud::PAGE_DETAIL) {
-            $fields[] = TextField::new('name');
-            $fields[] = TextField::new('target');
-            $fields[] = TextareaField::new('instructions');
-            $fields[] = ImageField::new('imageUrl')
-                ->setBasePath('/uploads/exercises')
-                ->onlyOnDetail();
-            return $fields;
+        // Manual upload
+        elseif ($entityInstance->getImageUrl() instanceof UploadedFile) {
+            $file = $entityInstance->getImageUrl();
+            $fileName = md5(uniqid()).'.'.$file->guessExtension();
+            $file->move($this->exerciseImageDirectory, $fileName);
+            $entityInstance->setImageUrl(self::UPLOAD_PATH . $fileName);
         }
 
-        // Fields for index page
-        if ($pageName === Crud::PAGE_INDEX) {
-            $fields[] = IntegerField::new("id");
-            $fields[] = TextField::new('name');
-            $fields[] = TextField::new('target');
-            $fields[] = TextareaField::new('instructions')
-                ->setMaxLength(50) // Show only first 50 chars
-                ->stripTags();
-            $fields[] = ImageField::new('imageUrl')
-                ->setBasePath('/uploads/exercises');
-            return $fields;
-        }
-
-        // Full form fields for new/edit
-        $fields[] = TextField::new('name', 'Exercise Name*')
-            ->setRequired(true)
-            ->setFormTypeOption('attr', ['required' => true]);
-
-        $fields[] = TextField::new('target', 'Target Muscle*')
-            ->setRequired(true)
-            ->setFormTypeOption('attr', ['required' => true]);
-
-        $fields[] = TextareaField::new('instructions')
-            ->setRequired(false);
-
-        $fields[] = ImageField::new('imageUrl')
-            ->setBasePath('/uploads/exercises')
-            ->hideOnForm();
-
-        $fields[] = ImageField::new('uploadedImage', 'Upload Image')
-            ->setUploadDir('public/uploads/exercises')
-            ->setBasePath('/uploads/exercises')
-            ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]')
-            ->onlyOnForms()
-            ->setFormTypeOption('mapped', false);
-
-        return $fields;
+        parent::persistEntity($entityManager, $entityInstance);
     }
 
     /**
@@ -132,46 +159,72 @@ class ExerciseCrudController extends AbstractCrudController
      * @throws DecodingExceptionInterface
      * @throws ClientExceptionInterface
      */
-    public function persistEntity(EntityManagerInterface $em, $exercise): void
+    public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
-        if ($exercise->getApiId()) {
-            try {
-                $data = $this->exerciseApi->fetchExerciseDetails($exercise->getApiId());
-                $exercise
-                    ->setName($data['name'])
-                    ->setTarget($data['target'])
-                    ->setInstructions(implode("\n", $data['instructions'] ?? []))
-                    ->setImageUrl($data['gifUrl'] ?? null);
-            } catch (\Exception $e) {
-                throw new \RuntimeException('Failed to load exercise details from API: '.$e->getMessage());
-            }
+        if (!$entityInstance instanceof Exercise) {
+            return;
         }
 
-        parent::persistEntity($em, $exercise);
+        $originalData = $entityManager->getUnitOfWork()->getOriginalEntityData($entityInstance);
+
+        // If API exercise is selected and changed
+        if ($entityInstance->getApiId() !== null &&
+            ($originalData['apiId'] !== $entityInstance->getApiId() || $entityInstance->getImageUrl() instanceof UploadedFile)) {
+            try {
+                $apiData = $this->exerciseApi->fetchExerciseDetails(
+                    (string) $entityInstance->getApiId(),
+                    $this->exerciseImageDirectory
+                );
+
+                $entityInstance->setName($apiData['name']);
+                $entityInstance->setTarget($apiData['target']);
+                $entityInstance->setInstructions(implode("\n", $apiData['instructions']));
+
+                // Save only the filename for API images on update
+                if ($apiData['gifUrl']) {
+                    $pathParts = pathinfo($apiData['gifUrl']);
+                    $entityInstance->setImageUrl($pathParts['basename']);
+                } else {
+                    $entityInstance->setImageUrl(null);
+                }
+
+                // Handle manual image upload if a new file is provided
+                if ($entityInstance->getImageUrl() instanceof UploadedFile) {
+                    // Delete old image if it exists and is a local file
+                    $this->deleteOldImageIfItExistsAndIsALocalFile($originalData['imageUrl'], $entityInstance);
+                }
+
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Failed to fetch updated exercise details from API. Keeping existing data.');
+                error_log('Failed to fetch exercise details: ' . $e->getMessage());
+            }
+        }
+        // Manual upload (only if not using API)
+        elseif ($entityInstance->getApiId() === null && $entityInstance->getImageUrl() instanceof UploadedFile) {
+            // Delete old image if it exists and is a local file
+            $this->deleteOldImageIfItExistsAndIsALocalFile($originalData['imageUrl'], $entityInstance);
+        }
+
+        parent::updateEntity($entityManager, $entityInstance);
     }
 
     /**
-     * @throws TransportExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws DecodingExceptionInterface
-     * @throws ClientExceptionInterface
+     * @param $imageUrl
+     * @param Exercise $entityInstance
+     * @return void
      */
-    public function updateEntity(EntityManagerInterface $em, $exercise): void
+    public function deleteOldImageIfItExistsAndIsALocalFile($imageUrl, Exercise $entityInstance): void
     {
-        if ($exercise->getApiId()) {
-            try {
-                $data = $this->exerciseApi->fetchExerciseDetails($exercise->getApiId());
-                $exercise
-                    ->setName($data['name'])
-                    ->setTarget($data['target'])
-                    ->setInstructions(implode("\n", $data['instructions'] ?? []))
-                    ->setImageUrl($data['gifUrl'] ?? null);
-            } catch (\Exception $e) {
-                throw new \RuntimeException('Failed to load exercise details from API: '.$e->getMessage());
+        if ($imageUrl && str_starts_with($imageUrl, self::UPLOAD_PATH)) {
+            $oldFilePath = $this->exerciseImageDirectory . basename($imageUrl);
+            if (file_exists($oldFilePath)) {
+                unlink($oldFilePath);
             }
         }
 
-        parent::updateEntity($em, $exercise);
+        $file = $entityInstance->getImageUrl();
+        $fileName = md5(uniqid()) . '.' . $file->guessExtension();
+        $file->move($this->exerciseImageDirectory, $fileName);
+        $entityInstance->setImageUrl(self::UPLOAD_PATH . $fileName);
     }
 }

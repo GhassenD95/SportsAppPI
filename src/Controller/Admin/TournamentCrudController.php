@@ -26,8 +26,7 @@ class TournamentCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('Tournament')
             ->setEntityLabelInPlural('Tournaments')
             ->setSearchFields(['name'])
-            ->setDefaultSort(['start_date' => 'DESC'])
-            ->showEntityActionsInlined();
+            ->setDefaultSort(['start_date' => 'DESC']);
     }
     public function configureActions(Actions $actions): Actions
     {

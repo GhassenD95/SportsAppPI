@@ -63,11 +63,12 @@ class EquipmentCrudController extends AbstractCrudController
                 ->setColumns('col-md-3'),
 
             ImageField::new('image_url')
+                ->setLabel('Image')
                 ->setBasePath('uploads/equipment')
                 ->setUploadDir('public/uploads/equipment')
                 ->setRequired(false)
                 ->setColumns('col-md-6')
-                ->hideOnIndex(),
+                ,
 
             AssociationField::new('facility')
                 ->setColumns('col-md-6')

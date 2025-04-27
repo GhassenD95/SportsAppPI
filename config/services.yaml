@@ -26,3 +26,16 @@ services:
     App\Service\ExerciseApiService:
         arguments:
             $apiKey: '%env(EXERCISE_DB_API_KEY)%'
+
+
+
+
+    App\DataFixtures\ExerciseFixtures:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+            $exerciseApi: '@App\Service\ExerciseApiService'
+
+
+    App\Controller\Admin\ExerciseCrudController:
+        arguments:
+            $projectDir: '%kernel.project_dir%'

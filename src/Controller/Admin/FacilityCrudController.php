@@ -6,6 +6,7 @@ use App\Entity\Facility;
 use App\Enum\Sport;
 use Doctrine\ORM\QueryBuilder;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
@@ -18,6 +19,13 @@ class FacilityCrudController extends AbstractCrudController
     public static function getEntityFqcn(): string
     {
         return Facility::class;
+    }
+    public function configureCrud(Crud $crud): Crud
+    {
+        return $crud
+            ->setEntityLabelInSingular('Facility')
+            ->setEntityLabelInPlural('Facilities')
+            ->setSearchFields(['name', 'location', 'manager.email', 'sports']);
     }
     public function configureActions(Actions $actions): Actions
     {
