@@ -34,9 +34,11 @@ class Equipment
     private ?string $image_url = null;
 
     #[ORM\ManyToOne(inversedBy: 'equipements')]
+    #[ORM\JoinColumn(onDelete: "SET NULL")]
     private ?Facility $facility = null;
 
     #[ORM\ManyToOne(inversedBy: 'equipements')]
+    #[ORM\JoinColumn(onDelete: "SET NULL")]
     private ?Team $team = null;
 
     public function getId(): ?int

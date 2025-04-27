@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250423225352 extends AbstractMigration
+final class Version20250427095516 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -21,10 +21,10 @@ final class Version20250423225352 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
-            CREATE TABLE facility (id INT AUTO_INCREMENT NOT NULL, manager_id INT DEFAULT NULL, name VARCHAR(255) NOT NULL, location VARCHAR(255) NOT NULL, image_url VARCHAR(255) DEFAULT NULL, sports JSON NOT NULL, INDEX IDX_105994B2783E3463 (manager_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+            ALTER TABLE equipment DROP FOREIGN KEY FK_D338D583A7014910
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE facility ADD CONSTRAINT FK_105994B2783E3463 FOREIGN KEY (manager_id) REFERENCES user (id)
+            ALTER TABLE equipment ADD CONSTRAINT FK_D338D583A7014910 FOREIGN KEY (facility_id) REFERENCES facility (id) ON DELETE SET NULL
         SQL);
     }
 
@@ -32,10 +32,10 @@ final class Version20250423225352 extends AbstractMigration
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
-            ALTER TABLE facility DROP FOREIGN KEY FK_105994B2783E3463
+            ALTER TABLE equipment DROP FOREIGN KEY FK_D338D583A7014910
         SQL);
         $this->addSql(<<<'SQL'
-            DROP TABLE facility
+            ALTER TABLE equipment ADD CONSTRAINT FK_D338D583A7014910 FOREIGN KEY (facility_id) REFERENCES facility (id) ON UPDATE NO ACTION ON DELETE NO ACTION
         SQL);
     }
 }

@@ -31,7 +31,7 @@ class MatchEvent
     private ?string $location = null;
 
     #[ORM\ManyToOne(inversedBy: 'matchEvents')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     #[Assert\NotNull(message: "A home team must be selected")]
     private ?Team $homeTeam = null;
 

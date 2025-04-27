@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250420021735 extends AbstractMigration
+final class Version20250427100258 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -21,7 +21,7 @@ final class Version20250420021735 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
-            CREATE UNIQUE INDEX UNIQ_8D93D649E7927C74 ON user (email)
+            ALTER TABLE match_event ADD CONSTRAINT FK_85C475069C4C13F6 FOREIGN KEY (home_team_id) REFERENCES team (id) ON DELETE CASCADE
         SQL);
     }
 
@@ -29,7 +29,7 @@ final class Version20250420021735 extends AbstractMigration
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
-            DROP INDEX UNIQ_8D93D649E7927C74 ON user
+            ALTER TABLE match_event DROP FOREIGN KEY FK_85C475069C4C13F6
         SQL);
     }
 }
