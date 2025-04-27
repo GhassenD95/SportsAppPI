@@ -77,6 +77,7 @@ class TeamCrudController extends AbstractCrudController
             ->setColumns(6)
             ->hideOnDetail();  // We'll handle detail view separately
         yield ImageField::new('logoUrl')
+            ->setLabel('Logo')
             ->setBasePath('uploads/teams')
             ->setUploadDir('public/uploads/teams')
             ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]')

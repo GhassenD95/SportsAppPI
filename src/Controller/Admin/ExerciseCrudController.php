@@ -75,9 +75,12 @@ class ExerciseCrudController extends AbstractCrudController
 
         if (Crud::PAGE_INDEX === $pageName || Crud::PAGE_DETAIL === $pageName) {
             yield ImageField::new('imageUrl')
+                ->setLabel('Image')
+
                 ->setBasePath(self::UPLOAD_PATH);
         } else {
             yield ImageField::new('imageUrl')
+                ->setLabel('Image')
                 ->setBasePath('')
                 ->setUploadDir('public/uploads/exercises')
                 ->setFormTypeOptions([
