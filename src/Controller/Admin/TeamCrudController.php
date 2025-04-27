@@ -67,15 +67,24 @@ class TeamCrudController extends AbstractCrudController
             ->setCrudController(UserCrudController::class)
             ->autocomplete()
             ->setFormTypeOption('by_reference', false)
-            ->formatValue(function ($value, Team $team) {
-                $playerNames = $team->getPlayers()->map(fn($p) => $p->getFullName())->toArray();
-                return count($playerNames) > 3
-                    ? implode(', ', array_slice($playerNames, 0, 3)).'... (+'.(count($playerNames)-3).' more)'
-                    : implode(', ', $playerNames);
-            })
             ->setQueryBuilder(fn($qb) => $qb->andWhere('entity.roles LIKE :role')->setParameter('role', '%ROLE_ATHLETE%'))
             ->setColumns(6)
-            ->hideOnDetail();  // We'll handle detail view separately
+            ->formatValue(function ($value, Team $team) use ($pageName) {
+                $playerNames = $team->getPlayers()->map(fn($p) => $p->getFullName())->toArray();
+
+                // On the index page, show only the first 3 players, with the rest summarized
+                if ($pageName === Crud::PAGE_INDEX) {
+                    return count($playerNames) > 3
+                        ? implode(', ', array_slice($playerNames, 0, 3)) . '... (+'.(count($playerNames)-3).' more)'
+                        : implode(', ', $playerNames);
+                }
+
+                // On the show page, display all players with clickable links
+                return implode(', ', array_map(function ($player) use ($team) {
+                    $url = $this->generateUrl('admin_user_detail', ['entityId' => $player->getId()]);
+                    return sprintf('<a href="%s">%s</a>', $url, $player);
+                }, $team->getPlayers()->toArray()));
+            }); // We'll handle detail view separately
         yield ImageField::new('logoUrl')
             ->setLabel('Logo')
             ->setBasePath('uploads/teams')
