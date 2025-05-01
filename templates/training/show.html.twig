@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Training{% endblock %}
+
+{% block body %}
+    <h1>Training</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ training.id }}</td>
+            </tr>
+            <tr>
+                <th>Title</th>
+                <td>{{ training.title }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ training.description }}</td>
+            </tr>
+            <tr>
+                <th>StartTime</th>
+                <td>{{ training.startTime ? training.startTime|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>EndTime</th>
+                <td>{{ training.endTime ? training.endTime|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_training_index') }}">back to list</a>
+
+    <a href="{{ path('app_training_edit', {'id': training.id}) }}">edit</a>
+
+    {{ include('training/_delete_form.html.twig') }}
+{% endblock %}

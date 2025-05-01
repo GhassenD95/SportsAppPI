@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ExerciseRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -28,6 +30,17 @@ class Exercise
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $imageUrl = null;
+
+    /**
+     * @var Collection<int, TrainingExercise>
+     */
+    #[ORM\OneToMany(targetEntity: TrainingExercise::class, mappedBy: 'exercise')]
+    private Collection $trainingExercises;
+
+    public function __construct()
+    {
+        $this->trainingExercises = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -90,6 +103,36 @@ class Exercise
     public function setImageUrl(?string $imageUrl): static
     {
         $this->imageUrl = $imageUrl;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TrainingExercise>
+     */
+    public function getTrainingExercises(): Collection
+    {
+        return $this->trainingExercises;
+    }
+
+    public function addTrainingExercise(TrainingExercise $trainingExercise): static
+    {
+        if (!$this->trainingExercises->contains($trainingExercise)) {
+            $this->trainingExercises->add($trainingExercise);
+            $trainingExercise->setExercise($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTrainingExercise(TrainingExercise $trainingExercise): static
+    {
+        if ($this->trainingExercises->removeElement($trainingExercise)) {
+            // set the owning side to null (unless already changed)
+            if ($trainingExercise->getExercise() === $this) {
+                $trainingExercise->setExercise(null);
+            }
+        }
 
         return $this;
     }

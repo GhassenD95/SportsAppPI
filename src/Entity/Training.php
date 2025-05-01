@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\TrainingRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -37,6 +39,17 @@ class Training
     #[ORM\ManyToOne(inversedBy: 'trainings')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Team $team = null;
+
+    /**
+     * @var Collection<int, TrainingExercise>
+     */
+    #[ORM\OneToMany(targetEntity: TrainingExercise::class, mappedBy: 'training', cascade: ['persist'], orphanRemoval: true)]
+    private Collection $trainingExercises;
+
+    public function __construct()
+    {
+        $this->trainingExercises = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -126,4 +139,36 @@ class Training
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, TrainingExercise>
+     */
+    public function getTrainingExercises(): Collection
+    {
+        return $this->trainingExercises;
+    }
+
+    public function addTrainingExercise(TrainingExercise $trainingExercise): static
+    {
+        if (!$this->trainingExercises->contains($trainingExercise)) {
+            $this->trainingExercises->add($trainingExercise);
+            $trainingExercise->setTraining($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTrainingExercise(TrainingExercise $trainingExercise): static
+    {
+        if ($this->trainingExercises->removeElement($trainingExercise)) {
+            // set the owning side to null (unless already changed)
+            if ($trainingExercise->getTraining() === $this) {
+                $trainingExercise->setTraining(null);
+            }
+        }
+
+        return $this;
+    }
+
+
 }
