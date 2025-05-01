@@ -56,12 +56,19 @@ class Team
     #[ORM\OneToMany(targetEntity: MatchEvent::class, mappedBy: 'homeTeam', orphanRemoval: true)]
     private Collection $matchEvents;
 
+    /**
+     * @var Collection<int, Training>
+     */
+    #[ORM\OneToMany(targetEntity: Training::class, mappedBy: 'team', orphanRemoval: true)]
+    private Collection $trainings;
+
     public function __construct()
     {
         $this->players = new ArrayCollection();
         $this->equipements = new ArrayCollection();
         $this->tournaments = new ArrayCollection();
         $this->matchEvents = new ArrayCollection();
+        $this->trainings = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -233,6 +240,36 @@ class Team
             // set the owning side to null (unless already changed)
             if ($matchEvent->getHomeTeam() === $this) {
                 $matchEvent->setHomeTeam(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Training>
+     */
+    public function getTrainings(): Collection
+    {
+        return $this->trainings;
+    }
+
+    public function addTraining(Training $training): static
+    {
+        if (!$this->trainings->contains($training)) {
+            $this->trainings->add($training);
+            $training->setTeam($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTraining(Training $training): static
+    {
+        if ($this->trainings->removeElement($training)) {
+            // set the owning side to null (unless already changed)
+            if ($training->getTeam() === $this) {
+                $training->setTeam(null);
             }
         }
 

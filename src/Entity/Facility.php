@@ -37,9 +37,16 @@ class Facility
     #[ORM\OneToMany(targetEntity: Equipment::class, mappedBy: 'facility')]
     private Collection $equipements;
 
+    /**
+     * @var Collection<int, Training>
+     */
+    #[ORM\OneToMany(targetEntity: Training::class, mappedBy: 'facility', orphanRemoval: true)]
+    private Collection $trainings;
+
     public function __construct()
     {
         $this->equipements = new ArrayCollection();
+        $this->trainings = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -141,5 +148,35 @@ class Facility
     public function __toString(): string
     {
         return $this->name;
+    }
+
+    /**
+     * @return Collection<int, Training>
+     */
+    public function getTrainings(): Collection
+    {
+        return $this->trainings;
+    }
+
+    public function addTraining(Training $training): static
+    {
+        if (!$this->trainings->contains($training)) {
+            $this->trainings->add($training);
+            $training->setFacility($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTraining(Training $training): static
+    {
+        if ($this->trainings->removeElement($training)) {
+            // set the owning side to null (unless already changed)
+            if ($training->getFacility() === $this) {
+                $training->setFacility(null);
+            }
+        }
+
+        return $this;
     }
 }
