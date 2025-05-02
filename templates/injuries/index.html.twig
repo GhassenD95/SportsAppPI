@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Injuries index{% endblock %}
+
+{% block body %}
+    <h1>Injuries index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>InjuryType</th>
+                <th>Severity</th>
+                <th>InjuryDate</th>
+                <th>ExpectedRecoveryDate</th>
+                <th>ActualRecoveryDate</th>
+                <th>Description</th>
+                <th>TreatmentPlan</th>
+                <th>Status</th>
+                <th>Notes</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for injury in injuries %}
+            <tr>
+                <td>{{ injury.id }}</td>
+                <td>{{ injury.injuryType }}</td>
+                <td>{{ injury.severity }}</td>
+                <td>{{ injury.injuryDate ? injury.injuryDate|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ injury.expectedRecoveryDate ? injury.expectedRecoveryDate|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ injury.actualRecoveryDate ? injury.actualRecoveryDate|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ injury.description }}</td>
+                <td>{{ injury.treatmentPlan }}</td>
+                <td>{{ injury.status }}</td>
+                <td>{{ injury.notes }}</td>
+                <td>
+                    <a href="{{ path('app_injuries_show', {'id': injury.id}) }}">show</a>
+                    <a href="{{ path('app_injuries_edit', {'id': injury.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="11">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_injuries_new') }}">Create new</a>
+{% endblock %}

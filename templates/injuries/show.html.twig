@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Injuries{% endblock %}
+
+{% block body %}
+    <h1>Injuries</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ injury.id }}</td>
+            </tr>
+            <tr>
+                <th>InjuryType</th>
+                <td>{{ injury.injuryType }}</td>
+            </tr>
+            <tr>
+                <th>Severity</th>
+                <td>{{ injury.severity }}</td>
+            </tr>
+            <tr>
+                <th>InjuryDate</th>
+                <td>{{ injury.injuryDate ? injury.injuryDate|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>ExpectedRecoveryDate</th>
+                <td>{{ injury.expectedRecoveryDate ? injury.expectedRecoveryDate|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>ActualRecoveryDate</th>
+                <td>{{ injury.actualRecoveryDate ? injury.actualRecoveryDate|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ injury.description }}</td>
+            </tr>
+            <tr>
+                <th>TreatmentPlan</th>
+                <td>{{ injury.treatmentPlan }}</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>{{ injury.status }}</td>
+            </tr>
+            <tr>
+                <th>Notes</th>
+                <td>{{ injury.notes }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_injuries_index') }}">back to list</a>
+
+    <a href="{{ path('app_injuries_edit', {'id': injury.id}) }}">edit</a>
+
+    {{ include('injuries/_delete_form.html.twig') }}
+{% endblock %}

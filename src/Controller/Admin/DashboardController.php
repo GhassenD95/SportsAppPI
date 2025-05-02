@@ -6,7 +6,9 @@ use App\Controller\UserController;
 use App\Entity\Equipment;
 use App\Entity\Exercise;
 use App\Entity\Facility;
+use App\Entity\Injuries;
 use App\Entity\MatchEvent;
+use App\Entity\MedicalReport;
 use App\Entity\Team;
 use App\Entity\Tournament;
 use App\Entity\Training;
@@ -68,5 +70,7 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Matches', 'fas fa-list', MatchEvent::class);
         yield MenuItem::linkToCrud('Exercises', 'fas fa-list', Exercise::class);
         yield MenuItem::linkToCrud('Training', 'fas fa-list', Training::class);
+        yield MenuItem::linkToCrud('Injuries', 'fas fa-list', Injuries::class);
+        yield MenuItem::linkToCrud('Medical Reports', 'fas fa-list', MedicalReport::class);
     }
 }
