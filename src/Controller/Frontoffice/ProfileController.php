@@ -11,7 +11,7 @@ class ProfileController extends BaseController
     #[Route('/', name: 'frontoffice_profile', methods: ['GET'])]
     public function index(): Response
     {
-        return $this->renderFrontoffice('profile/index.html.twig', [
+        return $this->render('profile/show.html.twig', [
             'user' => $this->getUser(),
         ]);
     }
