@@ -16,6 +16,17 @@ class MatchEventRepository extends ServiceEntityRepository
         parent::__construct($registry, MatchEvent::class);
     }
 
+    public function findUpcoming(int $limit = 5): array
+    {
+        return $this->createQueryBuilder('m')
+            ->where('m.date > :now')
+            ->setParameter('now', new \DateTime())
+            ->orderBy('m.date', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return MatchEvent[] Returns an array of MatchEvent objects
     //     */

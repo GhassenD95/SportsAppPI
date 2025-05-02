@@ -1,4 +1,71 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+{{ form_start(form, {'attr': {'class': 'space-y-8 divide-y divide-gray-200'}}) }}
+    <div class="space-y-8 divide-y divide-gray-200">
+        <div>
+            <div>
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    {% if form.vars.value.id is defined %}
+                        Edit Training Session
+                    {% else %}
+                        New Training Session
+                    {% endif %}
+                </h3>
+                <p class="mt-1 text-sm text-gray-500">
+                    {% if form.vars.value.id is defined %}
+                        Update the training session details.
+                    {% else %}
+                        Create a new training session.
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                <div class="sm:col-span-4">
+                    {{ form_label(form.title, 'Title', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                    <div class="mt-1">
+                        {{ form_widget(form.title, {'attr': {'class': 'shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md'}}) }}
+                    </div>
+                    {{ form_errors(form.title, {'attr': {'class': 'mt-2 text-sm text-red-600'}}) }}
+                </div>
+
+                <div class="sm:col-span-6">
+                    {{ form_label(form.description, 'Description', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                    <div class="mt-1">
+                        {{ form_widget(form.description, {'attr': {'class': 'shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md', 'rows': '3'}}) }}
+                    </div>
+                    {{ form_errors(form.description, {'attr': {'class': 'mt-2 text-sm text-red-600'}}) }}
+                </div>
+
+                <div class="sm:col-span-3">
+                    {{ form_label(form.startTime, 'Start Time', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                    <div class="mt-1">
+                        {{ form_widget(form.startTime, {'attr': {'class': 'shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md'}}) }}
+                    </div>
+                    {{ form_errors(form.startTime, {'attr': {'class': 'mt-2 text-sm text-red-600'}}) }}
+                </div>
+
+                <div class="sm:col-span-3">
+                    {{ form_label(form.endTime, 'End Time', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                    <div class="mt-1">
+                        {{ form_widget(form.endTime, {'attr': {'class': 'shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md'}}) }}
+                    </div>
+                    {{ form_errors(form.endTime, {'attr': {'class': 'mt-2 text-sm text-red-600'}}) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="pt-5">
+        <div class="flex justify-end">
+            <a href="{{ path('app_training_index') }}" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                Cancel
+            </a>
+            <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                {% if form.vars.value.id is defined %}
+                    Update
+                {% else %}
+                    Create
+                {% endif %}
+            </button>
+        </div>
+    </div>
 {{ form_end(form) }}

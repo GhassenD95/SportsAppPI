@@ -169,4 +169,12 @@ class MatchEvent
         );
     }
 
+    public function getDisplayTitle(): string
+    {
+        return sprintf(
+            '%s vs %s',
+            $this->homeTeam->getName(),
+            $this->awayTeam['name'] ?? 'Unknown Team'
+        );
+    }
 }

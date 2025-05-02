@@ -1,41 +1,57 @@
-{% extends 'base.html.twig' %}
+{% extends 'frontoffice/base.html.twig' %}
 
 {% block title %}Training index{% endblock %}
 
 {% block body %}
-    <h1>Training index</h1>
+    <div class="sm:flex sm:items-center">
+        <div class="sm:flex-auto">
+            <h1 class="text-xl font-semibold text-gray-900">Training Sessions</h1>
+            <p class="mt-2 text-sm text-gray-700">A list of all training sessions in the system.</p>
+        </div>
+        <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+            <a href="{{ path('app_training_new') }}" class="inline-flex items-center justify-center rounded-md border border-transparent bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 sm:w-auto">
+                Add Training
+            </a>
+        </div>
+    </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Title</th>
-                <th>Description</th>
-                <th>StartTime</th>
-                <th>EndTime</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for training in trainings %}
-            <tr>
-                <td>{{ training.id }}</td>
-                <td>{{ training.title }}</td>
-                <td>{{ training.description }}</td>
-                <td>{{ training.startTime ? training.startTime|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ training.endTime ? training.endTime|date('Y-m-d H:i:s') : '' }}</td>
-                <td>
-                    <a href="{{ path('app_training_show', {'id': training.id}) }}">show</a>
-                    <a href="{{ path('app_training_edit', {'id': training.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="6">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_training_new') }}">Create new</a>
+    <div class="mt-8 flow-root">
+        <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+                    <table class="min-w-full divide-y divide-gray-300">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Title</th>
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Description</th>
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Start Time</th>
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">End Time</th>
+                                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                                    <span class="sr-only">Actions</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 bg-white">
+                            {% for training in trainings %}
+                                <tr>
+                                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">{{ training.title }}</td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ training.description }}</td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ training.startTime ? training.startTime|date('Y-m-d H:i') : '' }}</td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ training.endTime ? training.endTime|date('Y-m-d H:i') : '' }}</td>
+                                    <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                                        <a href="{{ path('app_training_show', {'id': training.id}) }}" class="text-primary-600 hover:text-primary-900 mr-4">View</a>
+                                        <a href="{{ path('app_training_edit', {'id': training.id}) }}" class="text-primary-600 hover:text-primary-900">Edit</a>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="5" class="px-3 py-4 text-sm text-gray-500 text-center">No training sessions found</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
