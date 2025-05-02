@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}TeamPerformance index{% endblock %}
+
+{% block body %}
+    <h1>TeamPerformance index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>PerformanceDate</th>
+                <th>GoalsScored</th>
+                <th>GoalsConceded</th>
+                <th>ShotsOnTarget</th>
+                <th>ShotsConceded</th>
+                <th>PossessionPercentage</th>
+                <th>PassesCompleted</th>
+                <th>Tackles</th>
+                <th>Interceptions</th>
+                <th>Fouls</th>
+                <th>YellowCards</th>
+                <th>RedCards</th>
+                <th>Rating</th>
+                <th>Notes</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for team_performance in team_performances %}
+            <tr>
+                <td>{{ team_performance.id }}</td>
+                <td>{{ team_performance.performanceDate ? team_performance.performanceDate|date('Y-m-d') : '' }}</td>
+                <td>{{ team_performance.goalsScored }}</td>
+                <td>{{ team_performance.goalsConceded }}</td>
+                <td>{{ team_performance.shotsOnTarget }}</td>
+                <td>{{ team_performance.shotsConceded }}</td>
+                <td>{{ team_performance.possessionPercentage }}</td>
+                <td>{{ team_performance.passesCompleted }}</td>
+                <td>{{ team_performance.tackles }}</td>
+                <td>{{ team_performance.interceptions }}</td>
+                <td>{{ team_performance.fouls }}</td>
+                <td>{{ team_performance.yellowCards }}</td>
+                <td>{{ team_performance.redCards }}</td>
+                <td>{{ team_performance.rating }}</td>
+                <td>{{ team_performance.notes }}</td>
+                <td>
+                    <a href="{{ path('app_team_performance_show', {'id': team_performance.id}) }}">show</a>
+                    <a href="{{ path('app_team_performance_edit', {'id': team_performance.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="16">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_team_performance_new') }}">Create new</a>
+{% endblock %}

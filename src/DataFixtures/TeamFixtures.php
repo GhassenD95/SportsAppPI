@@ -18,10 +18,12 @@ class TeamFixtures extends Fixture implements DependentFixtureInterface
 
         // Get all athlete references that exist
         $athleteReferences = [];
-        $i = 0;
-        while ($this->hasReference('athlete_' . $i, User::class)) {
-            $athleteReferences[] = 'athlete_' . $i;
-            $i++;
+        for ($i = 0; $i < 20; $i++) {
+            try {
+                $athleteReferences[] = 'athlete-' . $i;
+            } catch (\Exception $e) {
+                break;
+            }
         }
 
         // Create teams (2 per sport)
@@ -33,27 +35,36 @@ class TeamFixtures extends Fixture implements DependentFixtureInterface
             $team->setSport($sport);
             $team->setLogoUrl($this->getTeamLogo($sport));
 
-            // Assign random coach (from coach_0 to coach_4)
-            $coachRef = 'coach_' . rand(0, 4);
-            $team->setCoach($this->getReference($coachRef, User::class));
+            // Assign random coach (from coach-0 to coach-4)
+            try {
+                $coachRef = 'coach-' . rand(0, 4);
+                $team->setCoach($this->getReference($coachRef, User::class));
+            } catch (\Exception $e) {
+                // If coach reference doesn't exist, use the first available coach
+                $team->setCoach($this->getReference('coach-0', User::class));
+            }
 
             $manager->persist($team);
             $teams[] = $team;
-            $this->addReference('team_' . $i, $team, Team::class);
+            $this->addReference('team-' . $i, $team);
         }
 
         // Randomly assign athletes to teams
         if (!empty($athleteReferences)) {
             foreach ($athleteReferences as $athleteRef) {
-                /** @var User $athlete */
-                $athlete = $this->getReference($athleteRef, User::class);
+                try {
+                    /** @var User $athlete */
+                    $athlete = $this->getReference($athleteRef, User::class);
 
-                // Assign to random team
-                $randomTeam = $teams[array_rand($teams)];
-                $randomTeam->addPlayer($athlete);
-                $athlete->setTeam($randomTeam);
+                    // Assign to random team
+                    $randomTeam = $teams[array_rand($teams)];
+                    $randomTeam->addPlayer($athlete);
+                    $athlete->setTeam($randomTeam);
 
-                $manager->persist($athlete);
+                    $manager->persist($athlete);
+                } catch (\Exception $e) {
+                    continue;
+                }
             }
         }
 
@@ -71,12 +82,11 @@ class TeamFixtures extends Fixture implements DependentFixtureInterface
         $template = $formats[$sport][array_rand($formats[$sport])];
         return str_replace('{city}', $faker->city(), $template);
     }
-    private function getTeamLogo(string $teamName): string
-    {
-        $name = urlencode($teamName);
-        return "https://ui-avatars.com/api/?name=$name&background=random&color=fff&size=400";
-    }
 
+    private function getTeamLogo(string $sport): string
+    {
+        return "https://ui-avatars.com/api/?name=$sport&background=random&color=fff&size=400";
+    }
 
     public function getDependencies(): array
     {

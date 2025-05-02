@@ -11,6 +11,8 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserFixtures extends Fixture
 {
+    public const ADMIN_REFERENCE = 'admin-user';
+    
     private UserPasswordHasherInterface $passwordHasher;
 
     public function __construct(UserPasswordHasherInterface $passwordHasher)
@@ -22,53 +24,70 @@ class UserFixtures extends Fixture
     {
         $faker = Factory::create();
 
-        // Create Admin
-        $admin = new User();
-        $admin->setEmail('admin@admin.com');
-        $admin->setName('Admin');
-        $admin->setLastname('User');
-        $admin->setRoles(['ROLE_ADMIN']);
-        $admin->setPassword($this->passwordHasher->hashPassword($admin, 'admin123'));
-        $admin->setImageUrl($this->getProfileImage('admin'));
-        $manager->persist($admin);
+        // Create admin user if it doesn't exist
+        $admin = $manager->getRepository(User::class)->findOneBy(['email' => 'admin2@admin.com']);
+        if (!$admin) {
+            $admin = new User();
+            $admin->setEmail('admin2@admin.com');
+            $admin->setName('Admin2');
+            $admin->setLastname('User');
+            $admin->setRoles(['ROLE_ADMIN']);
+            $admin->setPassword($this->passwordHasher->hashPassword($admin, 'admin123'));
+            $admin->setImageUrl($this->getProfileImage('admin'));
+            $manager->persist($admin);
+            $manager->flush(); // Flush immediately to get the ID
+        }
+        $this->setReference(self::ADMIN_REFERENCE, $admin);
 
-        // Create 3 Managers
+        // Create managers if they don't exist
         for ($i = 0; $i < 3; $i++) {
-            $managerUser = new User();
-            $managerUser->setEmail($faker->unique()->safeEmail());
-            $managerUser->setName($faker->firstName());
-            $managerUser->setLastname($faker->lastName());
-            $managerUser->setRoles(['ROLE_MANAGER']);
-            $managerUser->setPassword($this->passwordHasher->hashPassword($managerUser, 'manager123'));
-            $managerUser->setImageUrl($this->getProfileImage('manager'));
-            $manager->persist($managerUser);
-            $this->addReference('manager_'.$i, $managerUser);
+            $email = 'manager' . ($i + 1) . '@example.com';
+            $managerUser = $manager->getRepository(User::class)->findOneBy(['email' => $email]);
+            if (!$managerUser) {
+                $managerUser = new User();
+                $managerUser->setEmail($email);
+                $managerUser->setName($faker->firstName());
+                $managerUser->setLastname($faker->lastName());
+                $managerUser->setRoles(['ROLE_MANAGER']);
+                $managerUser->setPassword($this->passwordHasher->hashPassword($managerUser, 'manager123'));
+                $managerUser->setImageUrl($this->getProfileImage('manager'));
+                $manager->persist($managerUser);
+            }
+            $this->setReference('manager-' . $i, $managerUser);
         }
 
-        // Create 5 Coaches
+        // Create coaches if they don't exist
         for ($i = 0; $i < 5; $i++) {
-            $coach = new User();
-            $coach->setEmail($faker->unique()->safeEmail());
-            $coach->setName($faker->firstName());
-            $coach->setLastname($faker->lastName());
-            $coach->setRoles(['ROLE_COACH']);
-            $coach->setPassword($this->passwordHasher->hashPassword($coach, 'coach123'));
-            $coach->setImageUrl($this->getProfileImage('coach'));
-            $manager->persist($coach);
-            $this->addReference('coach_'.$i, $coach);
+            $email = 'coach' . ($i + 1) . '@example.com';
+            $coach = $manager->getRepository(User::class)->findOneBy(['email' => $email]);
+            if (!$coach) {
+                $coach = new User();
+                $coach->setEmail($email);
+                $coach->setName($faker->firstName());
+                $coach->setLastname($faker->lastName());
+                $coach->setRoles(['ROLE_COACH']);
+                $coach->setPassword($this->passwordHasher->hashPassword($coach, 'coach123'));
+                $coach->setImageUrl($this->getProfileImage('coach'));
+                $manager->persist($coach);
+            }
+            $this->setReference('coach-' . $i, $coach);
         }
 
-        // Create 20 Athletes
+        // Create athletes if they don't exist
         for ($i = 0; $i < 20; $i++) {
-            $athlete = new User();
-            $athlete->setEmail($faker->unique()->safeEmail());
-            $athlete->setName($faker->firstName());
-            $athlete->setLastname($faker->lastName());
-            $athlete->setRoles(['ROLE_ATHLETE']);
-            $athlete->setPassword($this->passwordHasher->hashPassword($athlete, 'athlete123'));
-            $athlete->setImageUrl($this->getProfileImage('athlete'));
-            $manager->persist($athlete);
-            $this->addReference('athlete_'.$i, $athlete);
+            $email = 'athlete' . ($i + 1) . '@example.com';
+            $athlete = $manager->getRepository(User::class)->findOneBy(['email' => $email]);
+            if (!$athlete) {
+                $athlete = new User();
+                $athlete->setEmail($email);
+                $athlete->setName($faker->firstName());
+                $athlete->setLastname($faker->lastName());
+                $athlete->setRoles(['ROLE_ATHLETE']);
+                $athlete->setPassword($this->passwordHasher->hashPassword($athlete, 'athlete123'));
+                $athlete->setImageUrl($this->getProfileImage('athlete'));
+                $manager->persist($athlete);
+            }
+            $this->setReference('athlete-' . $i, $athlete);
         }
 
         $manager->flush();

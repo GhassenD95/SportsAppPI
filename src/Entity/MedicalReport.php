@@ -40,6 +40,9 @@ class MedicalReport
     #[ORM\Column(length: 50)]
     private ?string $status = null;
 
+    #[ORM\OneToOne(inversedBy: 'medicalReport', cascade: ['persist', 'remove'])]
+    private ?Injuries $injury = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -130,6 +133,17 @@ class MedicalReport
     public function setStatus(string $status): static
     {
         $this->status = $status;
+        return $this;
+    }
+
+    public function getInjury(): ?Injuries
+    {
+        return $this->injury;
+    }
+
+    public function setInjury(?Injuries $injury): static
+    {
+        $this->injury = $injury;
         return $this;
     }
 }

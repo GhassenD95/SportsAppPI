@@ -18,14 +18,16 @@ class FacilityFixtures extends Fixture implements DependentFixtureInterface
 
         // Get all manager references dynamically
         $managers = [];
-        $i = 0;
-        while ($this->hasReference('manager_'.$i, User::class)) {
-            $managers[] = $this->getReference('manager_'.$i, User::class);
-            $i++;
+        for ($i = 0; $i < 3; $i++) {
+            try {
+                $managers[] = $this->getReference('manager-' . $i, User::class);
+            } catch (\Exception $e) {
+                break;
+            }
         }
 
         if (empty($managers)) {
-            throw new \RuntimeException('No manager users found. Make sure UserFixtures creates managers with references manager_0, manager_1, etc.');
+            throw new \RuntimeException('No manager users found. Make sure UserFixtures creates managers with references manager-0, manager-1, etc.');
         }
 
         // Sport configuration using your existing image files
@@ -76,7 +78,7 @@ class FacilityFixtures extends Fixture implements DependentFixtureInterface
             $facility->setManager($faker->randomElement($managers));
 
             $manager->persist($facility);
-            $this->addReference('facility_'.$i, $facility);
+            $this->addReference('facility-'.$i, $facility);
         }
 
         $manager->flush();

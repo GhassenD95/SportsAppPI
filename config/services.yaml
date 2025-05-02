@@ -27,14 +27,15 @@ services:
         arguments:
             $apiKey: '%env(EXERCISE_DB_API_KEY)%'
 
-
-
+    # Configure fixtures as services
+    App\DataFixtures\:
+        resource: '../src/DataFixtures'
+        tags: ['doctrine.fixture.orm']
 
     App\DataFixtures\ExerciseFixtures:
         arguments:
             $projectDir: '%kernel.project_dir%'
             $exerciseApi: '@App\Service\ExerciseApiService'
-
 
     App\Controller\Admin\ExerciseCrudController:
         arguments:

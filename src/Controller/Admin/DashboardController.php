@@ -9,7 +9,9 @@ use App\Entity\Facility;
 use App\Entity\Injuries;
 use App\Entity\MatchEvent;
 use App\Entity\MedicalReport;
+use App\Entity\PlayerPerformance;
 use App\Entity\Team;
+use App\Entity\TeamPerformance;
 use App\Entity\Tournament;
 use App\Entity\Training;
 use App\Entity\User;
@@ -71,6 +73,8 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Exercises', 'fas fa-list', Exercise::class);
         yield MenuItem::linkToCrud('Training', 'fas fa-list', Training::class);
         yield MenuItem::linkToCrud('Injuries', 'fas fa-list', Injuries::class);
-        yield MenuItem::linkToCrud('Medical Reports', 'fas fa-list', MedicalReport::class);
+        yield MenuItem::linkToCrud('Medical Reports', 'fas fa-file-medical', MedicalReport::class);
+        yield MenuItem::linkToCrud('Player Performance', 'fas fa-running', PlayerPerformance::class);
+        yield MenuItem::linkToCrud('Team Performance', 'fas fa-users', TeamPerformance::class);
     }
 }

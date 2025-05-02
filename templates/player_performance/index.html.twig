@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PlayerPerformance index{% endblock %}
+
+{% block body %}
+    <h1>PlayerPerformance index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>PerformanceDate</th>
+                <th>GoalsScored</th>
+                <th>Assists</th>
+                <th>MinutesPlayed</th>
+                <th>ShotsOnTarget</th>
+                <th>PassesCompleted</th>
+                <th>Tackles</th>
+                <th>Interceptions</th>
+                <th>Saves</th>
+                <th>Rating</th>
+                <th>Notes</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for player_performance in player_performances %}
+            <tr>
+                <td>{{ player_performance.id }}</td>
+                <td>{{ player_performance.performanceDate ? player_performance.performanceDate|date('Y-m-d') : '' }}</td>
+                <td>{{ player_performance.goalsScored }}</td>
+                <td>{{ player_performance.assists }}</td>
+                <td>{{ player_performance.minutesPlayed }}</td>
+                <td>{{ player_performance.shotsOnTarget }}</td>
+                <td>{{ player_performance.passesCompleted }}</td>
+                <td>{{ player_performance.tackles }}</td>
+                <td>{{ player_performance.interceptions }}</td>
+                <td>{{ player_performance.saves }}</td>
+                <td>{{ player_performance.rating }}</td>
+                <td>{{ player_performance.notes }}</td>
+                <td>
+                    <a href="{{ path('app_player_performance_show', {'id': player_performance.id}) }}">show</a>
+                    <a href="{{ path('app_player_performance_edit', {'id': player_performance.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="13">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_player_performance_new') }}">Create new</a>
+{% endblock %}
