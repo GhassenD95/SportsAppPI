@@ -39,3 +39,7 @@ services:
     App\Controller\Admin\ExerciseCrudController:
         arguments:
             $projectDir: '%kernel.project_dir%'
+
+    App\Validator\TrainingScheduleValidator:
+        arguments: [ '@App\Repository\TrainingRepository' ]
+        tags: [ validator.constraint_validator ]

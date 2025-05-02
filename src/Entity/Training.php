@@ -3,12 +3,16 @@
 namespace App\Entity;
 
 use App\Repository\TrainingRepository;
+use App\Validator\TrainingSchedule;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: TrainingRepository::class)]
+#[TrainingSchedule]
 class Training
 {
     #[ORM\Id]
@@ -17,34 +21,64 @@ class Training
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        min: 3,
+        max: 255,
+        minMessage: "Title must be at least {{ limit }} characters long",
+        maxMessage: "Title cannot be longer than {{ limit }} characters"
+    )]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\Length(max: 1000)]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotNull]
+    #[Assert\GreaterThanOrEqual(
+        value: "today",
+        message: "Start time must be in the future"
+    )]
     private ?\DateTimeInterface $startTime = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotNull]
+    #[Assert\Expression(
+        "this.getStartTime() < this.getEndTime()",
+        message: "End time must be after start time"
+    )]
+    #[Assert\Expression(
+        "this.getEndTime() <= this.getStartTime().modify('+2 hours')",
+        message: "Training session cannot exceed 2 hours"
+    )]
     private ?\DateTimeInterface $endTime = null;
 
     #[ORM\ManyToOne(inversedBy: 'trainings')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull]
     private ?Facility $facility = null;
 
     #[ORM\ManyToOne(inversedBy: 'trainings')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull]
     private ?User $coach = null;
 
     #[ORM\ManyToOne(inversedBy: 'trainings')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull]
     private ?Team $team = null;
 
     /**
      * @var Collection<int, TrainingExercise>
      */
     #[ORM\OneToMany(targetEntity: TrainingExercise::class, mappedBy: 'training', cascade: ['persist'], orphanRemoval: true)]
+    #[Assert\Count(
+        min: 1,
+        minMessage: "You must specify at least one exercise"
+    )]
     private Collection $trainingExercises;
+
 
     public function __construct()
     {
@@ -169,6 +203,8 @@ class Training
 
         return $this;
     }
+
+
 
 
 }

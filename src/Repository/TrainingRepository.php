@@ -16,6 +16,21 @@ class TrainingRepository extends ServiceEntityRepository
         parent::__construct($registry, Training::class);
     }
 
+    public function findOverlappingTrainings(Training $training): array
+    {
+        return $this->createQueryBuilder('t')
+            ->andWhere('t.id != :id OR :id IS NULL')
+            ->andWhere('t.team = :team OR t.facility = :facility OR t.coach = :coach')
+            ->andWhere('t.startTime < :endTime AND t.endTime > :startTime')
+            ->setParameter('id', $training->getId())
+            ->setParameter('team', $training->getTeam())
+            ->setParameter('facility', $training->getFacility())
+            ->setParameter('coach', $training->getCoach())
+            ->setParameter('startTime', $training->getStartTime())
+            ->setParameter('endTime', $training->getEndTime())
+            ->getQuery()
+            ->getResult();
+    }
     //    /**
     //     * @return Training[] Returns an array of Training objects
     //     */
