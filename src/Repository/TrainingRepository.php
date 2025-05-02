@@ -31,6 +31,32 @@ class TrainingRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function countUpcomingTrainings($user): int
+    {
+        return $this->createQueryBuilder('t')
+            ->select('COUNT(t.id)')
+            ->where('t.startTime > :now')
+            ->andWhere('t.coach = :user')
+            ->setParameter('now', new \DateTime())
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function findNextTrainingForUser($user)
+    {
+        return $this->createQueryBuilder('t')
+            ->where('t.startTime > :now')
+            ->andWhere('t.team = :team')
+            ->setParameter('now', new \DateTime())
+            ->setParameter('team', $user->getTeam())
+            ->orderBy('t.startTime', 'ASC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     //    /**
     //     * @return Training[] Returns an array of Training objects
     //     */
