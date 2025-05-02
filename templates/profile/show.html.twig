@@ -3,42 +3,44 @@
 {% block title %}My Profile - SportsApp{% endblock %}
 
 {% block body %}
-<div class="space-y-10 divide-y divide-gray-900/10">
-    <div class="grid grid-cols-1 gap-x-8 gap-y-8 md:grid-cols-3">
-        <div class="px-4 sm:px-0">
-            <h2 class="text-base font-semibold leading-7 text-gray-900">Profile</h2>
-            <p class="mt-1 text-sm leading-6 text-gray-600">This information will be displayed publicly so be careful what you share.</p>
-        </div>
+<div class="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-1">
+    <div class="bg-white rounded-lg shadow-md">
+        <div class="px-4 py-6 sm:p-8">
+            <div class="grid grid-cols-1 gap-x-8 gap-y-8 md:grid-cols-3">
+                <div class="px-4 sm:px-0">
+                    <h2 class="text-base font-semibold leading-7 text-gray-900">Profile Information</h2>
+                    <p class="mt-1 text-sm leading-6 text-gray-600">This information will be displayed publicly so be careful what you share.</p>
+                </div>
 
-        <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
-            <div class="px-4 py-6 sm:p-8">
-                <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                    <div class="sm:col-span-3">
-                        <label class="block text-sm font-medium leading-6 text-gray-900">First name</label>
-                        <div class="mt-2">
-                            <p class="text-sm text-gray-900">{{ user.name }}</p>
+                <div class="md:col-span-2">
+                    <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                        <div class="sm:col-span-3">
+                            <label class="block text-sm font-medium leading-6 text-gray-900">First name</label>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-900">{{ user.name }}</p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="sm:col-span-3">
-                        <label class="block text-sm font-medium leading-6 text-gray-900">Last name</label>
-                        <div class="mt-2">
-                            <p class="text-sm text-gray-900">{{ user.lastname }}</p>
+                        <div class="sm:col-span-3">
+                            <label class="block text-sm font-medium leading-6 text-gray-900">Last name</label>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-900">{{ user.lastname }}</p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="sm:col-span-4">
-                        <label class="block text-sm font-medium leading-6 text-gray-900">Email address</label>
-                        <div class="mt-2">
-                            <p class="text-sm text-gray-900">{{ user.email }}</p>
+                        <div class="sm:col-span-4">
+                            <label class="block text-sm font-medium leading-6 text-gray-900">Email address</label>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-900">{{ user.email }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-4 sm:px-8">
-                <a href="{{ path('app_profile_edit') }}" class="rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">Edit profile</a>
-            </div>
         </div>
+                <div class="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-4 sm:px-8">
+                    <a href="{{ path('app_profile_edit') }}" class="rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">Edit profile</a>
+                </div>
     </div>
 </div>
-{% endblock %} 
+{% endblock %}
