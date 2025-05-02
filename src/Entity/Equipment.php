@@ -38,7 +38,7 @@ class Equipment
     private ?Facility $facility = null;
 
     #[ORM\ManyToOne(inversedBy: 'equipements')]
-    #[ORM\JoinColumn(onDelete: "SET NULL")]
+    #[ORM\JoinColumn(onDelete: "CASCADE")]
     private ?Team $team = null;
 
     public function getId(): ?int

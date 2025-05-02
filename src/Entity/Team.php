@@ -20,7 +20,7 @@ class Team
     private ?string $name = null;
 
     #[ORM\ManyToOne(inversedBy: 'teams')]
-    #[ORM\JoinColumn(onDelete: "SET NULL")]
+    #[ORM\JoinColumn(onDelete: "CASCADE")]
     private ?User $coach = null;
 
     /**

@@ -21,7 +21,7 @@ class PasswordResetToken
     private ?\DateTimeImmutable $expires_at = null;
 
     #[ORM\OneToOne(inversedBy: 'passwordResetToken')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     private ?User $user = null;
 
     /**

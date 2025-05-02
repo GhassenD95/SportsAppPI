@@ -16,7 +16,7 @@ class Injuries
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'injuries')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     private ?User $player = null;
 
     #[ORM\Column(length: 50)]
@@ -54,7 +54,7 @@ class Injuries
     private ?MedicalReport $medicalReport = null;
 
     #[ORM\ManyToOne(inversedBy: 'injuries')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     private ?Team $team = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]

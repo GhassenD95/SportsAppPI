@@ -60,12 +60,12 @@ class Training
     private ?Facility $facility = null;
 
     #[ORM\ManyToOne(inversedBy: 'trainings')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     #[Assert\NotNull]
     private ?User $coach = null;
 
     #[ORM\ManyToOne(inversedBy: 'trainings')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     #[Assert\NotNull]
     private ?Team $team = null;
 

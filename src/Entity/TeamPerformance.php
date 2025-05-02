@@ -15,7 +15,7 @@ class TeamPerformance
     private ?int $id = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     private ?Team $team = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]

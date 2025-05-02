@@ -23,7 +23,7 @@ class Facility
     private ?string $location = null;
 
     #[ORM\ManyToOne(inversedBy: 'facilities')]
-    #[ORM\JoinColumn(onDelete: "SET NULL")]
+    #[ORM\JoinColumn(onDelete: "CASCADE")]
     private ?User $manager = null;
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image_url = null;
