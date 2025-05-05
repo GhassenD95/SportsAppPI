@@ -65,17 +65,52 @@ final class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+            // Handle image upload
+            $imageFile = $request->files->get('user')['imageUrl'] ?? null;
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = transliterator_transliterate('Any-Latin; Latin-ASCII; Lower()', $originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
 
-            // Add flash message
-            $this->addFlash('success', 'Profile updated successfully!');
+                try {
+                    $imageFile->move(
+                        $this->getParameter('kernel.project_dir').'/public/uploads/users',
+                        $newFilename
+                    );
+                    $imageUrl = '/uploads/users/'.$newFilename;
+                    $user->setImageUrl($imageUrl);
 
-            // If not admin, redirect to user show page
-            if (!in_array('ROLE_ADMIN', $user->getRoles())) {
-                return $this->redirectToRoute('app_user_show', ['id' => $user->getId()]);
+                    // Debug logging
+                    error_log('Image uploaded: ' . $imageUrl);
+                    error_log('User image URL set to: ' . $user->getImageUrl());
+                } catch (FileException $e) {
+                    // Handle exception if something happens during file upload
+                    $this->addFlash('error', 'Error uploading profile image: ' . $e->getMessage());
+                    error_log('File upload error: ' . $e->getMessage());
+                }
             }
 
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+            try {
+                $entityManager->persist($user);
+                $entityManager->flush();
+
+                // Debug logging
+                error_log('User updated successfully. Image URL: ' . $user->getImageUrl());
+
+                // Add flash message
+                $this->addFlash('success', 'Profile updated successfully!');
+
+                // If not admin, redirect to user show page
+                if (!in_array('ROLE_ADMIN', $user->getRoles())) {
+                    return $this->redirectToRoute('app_user_show', ['id' => $user->getId()]);
+                }
+
+                return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+            } catch (\Exception $e) {
+                // More detailed error logging
+                error_log('Database update error: ' . $e->getMessage());
+                $this->addFlash('error', 'Failed to update profile: ' . $e->getMessage());
+            }
         }
 
         return $this->render('user/edit.html.twig', [
