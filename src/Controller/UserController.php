@@ -66,7 +66,7 @@ final class UserController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             // Handle image upload
-            $imageFile = $request->files->get('user')['imageUrl'] ?? null;
+            $imageFile = $form->get('profileImage')->getData();
             if ($imageFile) {
                 $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFilename = transliterator_transliterate('Any-Latin; Latin-ASCII; Lower()', $originalFilename);
@@ -91,6 +91,11 @@ final class UserController extends AbstractController
             }
 
             try {
+                // Explicitly set the image URL
+                if (isset($imageUrl)) {
+                    $user->setImageUrl($imageUrl);
+                }
+
                 $entityManager->persist($user);
                 $entityManager->flush();
 
