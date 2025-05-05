@@ -31,6 +31,63 @@ class TrainingRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function countUpcomingTrainings($user): int
+    {
+        return $this->createQueryBuilder('t')
+            ->select('COUNT(t.id)')
+            ->where('t.startTime > :now')
+            ->andWhere('t.coach = :user')
+            ->setParameter('now', new \DateTime())
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function findNextTrainingForUser($user)
+    {
+        return $this->createQueryBuilder('t')
+            ->where('t.startTime > :now')
+            ->andWhere('t.team = :team')
+            ->setParameter('now', new \DateTime())
+            ->setParameter('team', $user->getTeam())
+            ->orderBy('t.startTime', 'ASC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function findRecent(int $limit = 5): array
+    {
+        return $this->createQueryBuilder('t')
+            ->where('t.startTime < :now')
+            ->setParameter('now', new \DateTime())
+            ->orderBy('t.startTime', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByCoach($coach): array
+    {
+        return $this->createQueryBuilder('t')
+            ->where('t.coach = :coach')
+            ->setParameter('coach', $coach)
+            ->orderBy('t.startTime', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByPlayer($player): array
+    {
+        return $this->createQueryBuilder('t')
+            ->where('t.team = :team')
+            ->setParameter('team', $player->getTeam())
+            ->orderBy('t.startTime', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Training[] Returns an array of Training objects
     //     */

@@ -223,7 +223,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->roles = $data['roles'];
     }
 
-    // Helper Methods
     public function getFullName(): string
     {
         return $this->name . ' ' . $this->lastname;
@@ -231,7 +230,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function hasRole(string $role): bool
     {
-        return in_array(strtoupper($role), $this->getRoles(), true);
+        return in_array($role, $this->getRoles());
     }
 
     /**
@@ -278,7 +277,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __toString(): string
     {
-        return $this->getFullName() ?: '';
+        return $this->getFullName();
     }
 
     public function getPasswordResetToken(): ?PasswordResetToken

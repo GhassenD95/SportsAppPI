@@ -23,6 +23,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 #[AdminDashboard(routePath: '/admin', routeName: 'admin')]
 class DashboardController extends AbstractDashboardController
@@ -76,5 +77,9 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Medical Reports', 'fas fa-file-medical', MedicalReport::class);
         yield MenuItem::linkToCrud('Player Performance', 'fas fa-running', PlayerPerformance::class);
         yield MenuItem::linkToCrud('Team Performance', 'fas fa-users', TeamPerformance::class);
+        
+        // Add logout menu item at the bottom
+        yield MenuItem::section();
+        yield MenuItem::linkToRoute('Logout', 'fa fa-sign-out', 'app_logout');
     }
 }

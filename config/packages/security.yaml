@@ -9,7 +9,7 @@ security:
         app_user_provider:
             entity:
                 class: App\Entity\User
-                property: email  # Make sure this matches your User entity identifier field
+                property: email
 
     firewalls:
         dev:
@@ -17,27 +17,48 @@ security:
             security: false
         main:
             lazy: true
-            provider: app_user_provider  # Changed to use your entity provider
+            provider: app_user_provider
             form_login:
                 login_path: app_login
                 check_path: app_login
                 enable_csrf: true
-                default_target_path: admin_team_index  # Add your target route after login
-                # Uncomment if your form uses different field names:
-                # username_parameter: email
-                # password_parameter: password
+                default_target_path: app_home
+                username_parameter: _username
+                password_parameter: _password
+                success_handler: App\Security\AuthenticationSuccessHandler
+                always_use_default_target_path: false
+                use_referer: false
             logout:
                 path: app_logout
-                target: app_login  # Where to redirect after logout
+                target: app_login
+                enable_csrf: false
+                invalidate_session: true
+                delete_cookies: 
+                    PHPSESSID: { path: '/' }
+                    REMEMBERME: { path: '/' }
+            access_denied_handler: App\Security\AccessDeniedHandler
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 3600
+                path: /
+                domain: null
+                secure: false
+                httponly: true
+                samesite: lax
 
     access_control:
-        - { path: ^/login$, roles: PUBLIC_ACCESS }
-        - { path: ^/admin, roles: PUBLIC_ACCESS }
+        - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/home, roles: ROLE_USER }
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/register, roles: PUBLIC_ACCESS }
+        - { path: ^/, roles: ROLE_USER }
 
-    role_hierarchy:  # Add this section for role inheritance
-        ROLE_ADMIN: [ROLE_MANAGER, ROLE_COACH, ROLE_ATHLETE]
-        ROLE_MANAGER: [ROLE_ATHLETE]
-        ROLE_COACH: [ROLE_ATHLETE]
+    role_hierarchy:
+        ROLE_ADMIN: ROLE_USER
+        ROLE_MANAGER: ROLE_USER
+        ROLE_COACH: ROLE_USER
+        ROLE_ATHLETE: ROLE_USER
 
 when@test:
     security:
