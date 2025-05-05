@@ -21,8 +21,8 @@ class MatchEventFixtures extends Fixture implements DependentFixtureInterface
 
         // Load all team references
         $i = 0;
-        while ($this->hasReference('team_' . $i, Team::class)) {
-            $teamReferences[] = 'team_' . $i;
+        while ($this->hasReference('team-' . $i, Team::class)) {
+            $teamReferences[] = 'team-' . $i;
             $i++;
         }
 
@@ -34,6 +34,10 @@ class MatchEventFixtures extends Fixture implements DependentFixtureInterface
                 $i++;
             }
         }
+
+        // Debug info
+        echo "Team References: " . count($teamReferences) . "\n";
+        echo "Tournament References: " . count($tournamentReferences) . "\n";
 
         // Only create tournament matches if we have tournaments
         if (!empty($tournamentReferences)) {
@@ -48,6 +52,7 @@ class MatchEventFixtures extends Fixture implements DependentFixtureInterface
                 $teams = $tournament->getTeams()->toArray();
 
                 if (count($teams) < 2) {
+                    echo "Skipping tournament with insufficient teams\n";
                     continue; // Skip if tournament doesn't have enough teams
                 }
 
@@ -65,6 +70,7 @@ class MatchEventFixtures extends Fixture implements DependentFixtureInterface
                 }
 
                 if ($homeTeam === $awayTeam) {
+                    echo "Skipping match with same home/away team\n";
                     continue; // Skip if couldn't find different teams
                 }
 
@@ -84,6 +90,7 @@ class MatchEventFixtures extends Fixture implements DependentFixtureInterface
         for ($i = 0; $i < $friendlyMatchCount; $i++) {
             // Skip if we don't have enough teams
             if (count($teamReferences) < 2) {
+                echo "Insufficient teams for friendly match\n";
                 continue;
             }
 
@@ -106,6 +113,7 @@ class MatchEventFixtures extends Fixture implements DependentFixtureInterface
             }
 
             if ($homeTeam === $awayTeam || $homeTeam->getSport() !== $awayTeam->getSport()) {
+                echo "Skipping friendly match with incompatible teams\n";
                 continue; // Skip if couldn't find compatible teams
             }
 

@@ -24,36 +24,41 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Doctrine\ORM\EntityManagerInterface;
 
 #[AdminDashboard(routePath: '/admin', routeName: 'admin')]
 class DashboardController extends AbstractDashboardController
 {
+    private $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
     public function index(): Response
     {
+        // Collect statistics
+        $totalUsers = $this->entityManager->getRepository(User::class)->count([]);
+        $totalTeams = $this->entityManager->getRepository(Team::class)->count([]);
+        $totalFacilities = $this->entityManager->getRepository(Facility::class)->count([]);
+        $totalTournaments = $this->entityManager->getRepository(Tournament::class)->count([]);
+        $totalTrainings = $this->entityManager->getRepository(Training::class)->count([]);
+        $totalMatches = $this->entityManager->getRepository(MatchEvent::class)->count([]);
 
-        // Option 1. You can make your dashboard redirect to some common page of your backend
-        //
-        // 1.1) If you have enabled the "pretty URLs" feature:
-        // return $this->redirectToRoute('admin_user_index');
-        //
-        // 1.2) Same example but using the "ugly URLs" that were used in previous EasyAdmin versions:
-        $adminUrlGenerator = $this->container->get(AdminUrlGenerator::class);
-        return $this->redirect($adminUrlGenerator->setController(UserCrudController::class)->generateUrl());
-
-        // Option 2. You can make your dashboard redirect to different pages depending on the user
-        //
-        // if ('jane' === $this->getUser()->getUsername()) {
-        //     return $this->redirectToRoute('...');
-        // }
-
-        // Option 3. You can render some custom template to display a proper dashboard with widgets, etc.
-        // (tip: it's easier if your template extends from @EasyAdmin/page/content.html.twig)
-        //
-        // return $this->render('some/path/my-dashboard.html.twig');
+        // Render the dashboard view directly
+        return $this->render('admin/dashboard.html.twig', [
+            'total_users' => $totalUsers,
+            'total_teams' => $totalTeams,
+            'total_facilities' => $totalFacilities,
+            'total_tournaments' => $totalTournaments,
+            'total_trainings' => $totalTrainings,
+            'total_matches' => $totalMatches,
+        ]);
     }
 
     public function configureDashboard(): Dashboard

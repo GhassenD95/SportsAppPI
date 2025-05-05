@@ -20,8 +20,8 @@ class TournamentFixtures extends Fixture implements DependentFixtureInterface
         // Get all team references
         $teamReferences = [];
         $i = 0;
-        while ($this->hasReference('team_'.$i, Team::class)) {
-            $teamReferences[] = 'team_'.$i;
+        while ($this->hasReference('team-'.$i, Team::class)) {
+            $teamReferences[] = 'team-'.$i;
             $i++;
         }
 
