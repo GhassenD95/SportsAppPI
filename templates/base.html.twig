@@ -1,18 +1,112 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-        {% block stylesheets %}
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AthleteSync{% endblock %}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    
+    {% block stylesheets %}
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'nike-black': '#0D0D0D',  // Ultra-dark black
+                        'nike-accent': '#F5F5F5',  // Light accent
+                        'nike-gray': '#1A1A1A',   // Deep charcoal
+                        'nike-highlight': '#2D2D2D', // Subtle highlight
+                        'brand-red': '#FF0000',   // Vibrant red
+                        'brand-blue': '#0070C9'   // Apple blue
+                    }
+                }
+            }
+        }
+    </script>
+    {% endblock %}
+
+    {% block head_javascripts %}{% endblock %}
+</head>
+<body class="h-full font-sans antialiased text-gray-100">
+    <div class="min-h-full">
+        {% block sidebar %}
+        <div class="fixed inset-y-0 left-0 w-64 bg-nike-black shadow-2xl z-50 transform transition-transform duration-300 ease-in-out">
+            <div class="flex flex-col h-full">
+                <div class="flex items-center justify-center h-16 border-b border-nike-highlight text-white">
+                    <h1 class="text-2xl font-bold tracking-wider">AthleteSync</h1>
+                </div>
+                
+                <nav class="flex-1 overflow-y-auto pt-5 pb-4">
+                    <div class="px-3 space-y-1 mb-4">
+                        {% block sidebar_menu %}
+                            <a href="{{ path('app_home') }}" class="group flex items-center px-3 py-2 text-sm font-medium text-nike-accent hover:bg-nike-highlight rounded-md">
+                                <i data-feather="home" class="mr-3 h-5 w-5 text-gray-400 group-hover:text-brand-blue"></i>
+                                Dashboard
+                            </a>
+                            
+                            {% if is_granted('ROLE_COACH') %}
+                                <a href="#" class="group flex items-center px-3 py-2 text-sm font-medium text-nike-accent hover:bg-nike-highlight rounded-md">
+                                    <i data-feather="activity" class="mr-3 h-5 w-5 text-gray-400 group-hover:text-brand-blue"></i>
+                                    Training Management
+                                </a>
+                            {% endif %}
+                            
+                            {% if is_granted('ROLE_MANAGER') %}
+                                <a href="#" class="group flex items-center px-3 py-2 text-sm font-medium text-nike-accent hover:bg-nike-highlight rounded-md">
+                                    <i data-feather="users" class="mr-3 h-5 w-5 text-gray-400 group-hover:text-brand-blue"></i>
+                                    Team Management
+                                </a>
+                            {% endif %}
+                            
+                            {% if is_granted('ROLE_ATHLETE') %}
+                                <a href="#" class="group flex items-center px-3 py-2 text-sm font-medium text-nike-accent hover:bg-nike-highlight rounded-md">
+                                    <i data-feather="trending-up" class="mr-3 h-5 w-5 text-gray-400 group-hover:text-brand-blue"></i>
+                                    Performance Tracking
+                                </a>
+                            {% endif %}
+                        {% endblock %}
+                    </div>
+                </nav>
+                
+                {% block sidebar_footer %}
+                <div class="absolute bottom-0 left-0 right-0 bg-nike-gray border-t border-nike-highlight p-4 transition-all duration-300 hover:bg-nike-highlight group">
+                    <div class="flex items-center">
+                        <div class="relative">
+                            <img src="{{ app.user.imageUrl ?? asset('images/default-avatar.png') }}" alt="Profile" class="h-10 w-10 rounded-full border-2 border-transparent group-hover:border-brand-blue transition-all duration-300">
+                            <span class="absolute bottom-0 right-0 h-3 w-3 bg-brand-blue rounded-full border-2 border-nike-black"></span>
+                        </div>
+                        <div class="ml-3 flex-grow overflow-hidden">
+                            <p class="text-sm font-medium text-nike-accent truncate">{{ app.user.fullName ?? app.user.name ?? 'User' }}</p>
+                            <p class="text-xs text-gray-400 truncate">{{ app.user.roles[0] ?? 'Member' }}</p>
+                        </div>
+                        <a href="{{ path('app_logout') }}" class="text-gray-400 hover:text-brand-red transition-colors duration-300">
+                            <i data-feather="log-out" class="h-5 w-5"></i>
+                        </a>
+                    </div>
+                </div>
+            {% endblock %}
+            </div>
+        </div>
         {% endblock %}
 
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+        <main class="pl-64 min-h-screen">
+            <div class="py-10">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        </main>
+    </div>
+
+    {% block body_javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            feather.replace();
+        });
+    </script>
+    {% endblock %}
+</body>
 </html>

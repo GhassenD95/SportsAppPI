@@ -84,7 +84,6 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Team Performance', 'fas fa-users', TeamPerformance::class);
         
         // Add logout menu item at the bottom
-        yield MenuItem::section();
-        yield MenuItem::linkToRoute('Logout', 'fa fa-sign-out', 'app_logout');
+        
     }
 }
