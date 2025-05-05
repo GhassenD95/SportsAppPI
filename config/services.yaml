@@ -45,6 +45,3 @@ services:
         arguments: [ '@App\Repository\TrainingRepository' ]
         tags: [ validator.constraint_validator ]
 
-    App\Security\AuthenticationSuccessHandler:
-        arguments:
-            $urlGenerator: '@router'
