@@ -78,12 +78,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $trainings;
 
     /**
-     * @var Collection<int, Injuries>
-     */
-    #[ORM\OneToMany(targetEntity: Injuries::class, mappedBy: 'player')]
-    private Collection $injuries;
-
-    /**
      * @var Collection<int, Phone>
      */
     #[ORM\OneToMany(targetEntity: Phone::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
@@ -97,7 +91,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->facilities = new ArrayCollection();
         $this->trainings = new ArrayCollection();
         $this->phones = new ArrayCollection();
-        $this->injuries = new ArrayCollection();
     }
 
     #[ORM\PreUpdate]
@@ -358,6 +351,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->phones;
     }
 
+    /**
+     * @return Collection<int, Phone>
+     */
+    /**
+     * @return Collection<int, Phone>
+     */
+    public function getPhones(): Collection
+    {
+        return $this->phones;
+    }
+
     public function addPhone(Phone $phone): static
     {
         if (!$this->phones->contains($phone)) {
@@ -373,35 +377,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->phones->removeElement($phone)) {
             if ($phone->getUser() === $this) {
                 $phone->setUser(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Injuries>
-     */
-    public function getInjuries(): Collection
-    {
-        return $this->injuries;
-    }
-
-    public function addInjury(Injuries $injury): static
-    {
-        if (!$this->injuries->contains($injury)) {
-            $this->injuries->add($injury);
-            $injury->setPlayer($this);
-        }
-
-        return $this;
-    }
-
-    public function removeInjury(Injuries $injury): static
-    {
-        if ($this->injuries->removeElement($injury)) {
-            if ($injury->getPlayer() === $this) {
-                $injury->setPlayer(null);
             }
         }
 

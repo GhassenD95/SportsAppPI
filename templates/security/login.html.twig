@@ -3,18 +3,43 @@
 {% block title %}Log in!{% endblock %}
 
 {% block body %}
-<div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+<div class="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden" style="
+    background: 
+        linear-gradient(45deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.02) 100%),
+        radial-gradient(circle at 30% 50%, rgba(0,122,255,0.15) 0%, transparent 50%),
+        radial-gradient(circle at 70% 50%, rgba(255,45,85,0.1) 0%, transparent 50%),
+        linear-gradient(225deg, rgba(52,199,89,0.1) 0%, transparent 50%),
+        repeating-linear-gradient(
+            -45deg,
+            rgba(0,0,0,0.02) 0px,
+            rgba(0,0,0,0.02) 25px,
+            transparent 25px,
+            transparent 50px
+        );
+    background-color: #f4f4f4;
+    background-blend-mode: overlay;">
+    <div class="absolute inset-0 opacity-50 pointer-events-none" style="
+    background: 
+        linear-gradient(135deg, rgba(0,0,0,0.03) 0%, rgba(0,0,0,0.01) 100%),
+        radial-gradient(ellipse at top left, rgba(0,122,255,0.05) 0%, transparent 60%),
+        radial-gradient(ellipse at bottom right, rgba(255,45,85,0.05) 0%, transparent 60%),
+        linear-gradient(45deg, rgba(52,199,89,0.03) 0%, transparent 50%);
+    background-blend-mode: soft-light;">
+    </div>
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sports Management System
-        </h2>
-        <p class="mt-2 text-center text-sm text-gray-600">
+        <div class="flex items-center justify-center mb-6">
+            <img src="{{ asset('images/athletesync-logo.svg') }}" alt="AthleteSync Logo" class="h-10 w-10 mr-3">
+            <h2 class="text-3xl font-extrabold text-neutral-800">
+                AthleteSync
+            </h2>
+        </div>
+        <p class="mt-2 text-center text-sm text-gray-500">
             Sign in to access your dashboard
         </p>
     </div>
 
-    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10 transform transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl">
+        <div class="bg-white py-8 px-4 shadow-2xl sm:rounded-xl sm:px-10 border border-gray-100">
             {% if error %}
                 <div class="mb-4 bg-red-50 border-l-4 border-red-500 p-4">
                     <div class="flex">
@@ -52,36 +77,36 @@
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
                 <div>
-                    <label for="username" class="block text-sm font-medium text-gray-700">
+                    <label for="username" class="block text-sm font-medium text-nike-black">
                         Email address
                     </label>
                     <div class="mt-1">
                         <input id="username" name="_username" type="email" value="{{ last_username }}" autocomplete="email" required
-                            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-brand-blue focus:border-brand-blue sm:text-sm">
                     </div>
                 </div>
 
                 <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700">
+                    <label for="password" class="block text-sm font-medium text-nike-black">
                         Password
                     </label>
                     <div class="mt-1">
                         <input id="password" name="_password" type="password" autocomplete="current-password" required
-                            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-brand-blue focus:border-brand-blue sm:text-sm">
                     </div>
                 </div>
 
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
                         <input id="remember_me" name="_remember_me" type="checkbox"
-                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                            class="h-4 w-4 text-brand-blue focus:ring-brand-blue border-gray-300 rounded">
                         <label for="remember_me" class="ml-2 block text-sm text-gray-900">
                             Remember me
                         </label>
                     </div>
 
                     <div class="text-sm">
-                        <a href="#" class="font-medium text-blue-600 hover:text-blue-500">
+                        <a href="#" class="font-medium text-brand-blue hover:text-brand-blue/80">
                             Forgot your password?
                         </a>
                     </div>
@@ -89,7 +114,7 @@
 
                 <div>
                     <button type="submit"
-                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-brand-blue hover:bg-brand-blue/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue/50">
                         Sign in
                     </button>
                 </div>
@@ -112,7 +137,7 @@
                         <input type="hidden" name="_username" value="admin2@admin.com">
                         <input type="hidden" name="_password" value="admin123">
                         <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-                        <button type="submit" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        <button type="submit" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-600 hover:bg-gray-50">
                             Admin Login
                         </button>
                     </form>
@@ -121,7 +146,7 @@
                         <input type="hidden" name="_username" value="manager1@example.com">
                         <input type="hidden" name="_password" value="manager123">
                         <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-                        <button type="submit" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        <button type="submit" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-600 hover:bg-gray-50">
                             Manager Login
                         </button>
                     </form>
@@ -130,7 +155,7 @@
                         <input type="hidden" name="_username" value="coach1@example.com">
                         <input type="hidden" name="_password" value="coach123">
                         <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-                        <button type="submit" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        <button type="submit" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-600 hover:bg-gray-50">
                             Coach Login
                         </button>
                     </form>
@@ -139,7 +164,7 @@
                         <input type="hidden" name="_username" value="athlete1@example.com">
                         <input type="hidden" name="_password" value="athlete123">
                         <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-                        <button type="submit" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        <button type="submit" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-600 hover:bg-gray-50">
                             Athlete Login
                         </button>
                     </form>

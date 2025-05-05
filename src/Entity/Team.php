@@ -63,6 +63,12 @@ class Team
     #[ORM\OneToMany(targetEntity: Training::class, mappedBy: 'team', orphanRemoval: true)]
     private Collection $trainings;
 
+    /**
+     * @var Collection<int, Injuries>
+     */
+    #[ORM\OneToMany(targetEntity: Injuries::class, mappedBy: 'team')]
+    private Collection $injuries;
+
     public function __construct()
     {
         $this->players = new ArrayCollection();
@@ -70,6 +76,7 @@ class Team
         $this->tournaments = new ArrayCollection();
         $this->matchEvents = new ArrayCollection();
         $this->trainings = new ArrayCollection();
+        $this->injuries = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -271,6 +278,35 @@ class Team
             // set the owning side to null (unless already changed)
             if ($training->getTeam() === $this) {
                 $training->setTeam(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Injuries>
+     */
+    public function getInjuries(): Collection
+    {
+        return $this->injuries;
+    }
+
+    public function addInjury(Injuries $injury): static
+    {
+        if (!$this->injuries->contains($injury)) {
+            $this->injuries->add($injury);
+            $injury->setTeam($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInjury(Injuries $injury): static
+    {
+        if ($this->injuries->removeElement($injury)) {
+            if ($injury->getTeam() === $this) {
+                $injury->setTeam(null);
             }
         }
 
