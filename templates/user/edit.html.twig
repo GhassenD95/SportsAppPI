@@ -60,6 +60,51 @@
             </div>
 
             <div class="bg-white p-6 rounded-xl border border-nike-gray/20 hover:border-brand-blue/50 transition-all duration-300">
+                <h3 class="text-lg font-semibold mb-4 text-gray-900">Change Password</h3>
+                <div class="text-sm text-gray-600 mb-4">
+                    <p>You can set a new password here. If you've forgotten your current password, please contact support.</p>
+                </div>
+                {{ form_start(passwordForm, {'attr': {'class': 'space-y-4'}}) }}
+                    {% if passwordForm.vars.submitted and not passwordForm.vars.valid %}
+                        <div class="bg-red-100 text-red-800 p-4 rounded-lg mb-4">
+                            <p>Form submission failed. Please check the following:</p>
+                            <ul class="list-disc list-inside">
+                                {% for child in passwordForm.newPassword.children %}
+                                    {% for error in child.vars.errors %}
+                                        <li>{{ error.message }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                                {% for error in passwordForm.newPassword.vars.errors %}
+                                    <li>{{ error.message }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    <div>
+                        {{ form_label(passwordForm.newPassword.first, 'New Password', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                        <div class="mt-1">
+                            {{ form_widget(passwordForm.newPassword.first, {'attr': {'class': 'block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm bg-white text-gray-900 placeholder-gray-400'}}) }}
+                            {{ form_errors(passwordForm.newPassword.first) }}
+                        </div>
+                    </div>
+
+                    <div>
+                        {{ form_label(passwordForm.newPassword.second, 'Confirm New Password', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                        <div class="mt-1">
+                            {{ form_widget(passwordForm.newPassword.second, {'attr': {'class': 'block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm bg-white text-gray-900 placeholder-gray-400'}}) }}
+                            {{ form_errors(passwordForm.newPassword.second) }}
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <button type="submit" class="w-full rounded-md bg-brand-blue text-white px-4 py-2 text-sm font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center">
+                            <i data-feather="lock" class="h-5 w-5 mr-2"></i>Change Password
+                        </button>
+                    </div>
+                {{ form_end(passwordForm) }}
+            </div>
+
+            <div class="bg-white p-6 rounded-xl border border-nike-gray/20 hover:border-brand-blue/50 transition-all duration-300">
                 <div class="flex items-center mb-4">
                     <i data-feather="settings" class="h-8 w-8 text-brand-blue mr-3"></i>
                     <h2 class="text-xl font-display font-semibold text-black">Profile Actions</h2>

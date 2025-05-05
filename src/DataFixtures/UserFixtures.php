@@ -21,6 +21,45 @@ class UserFixtures extends Fixture
         private UserPasswordHasherInterface $passwordHasher
     ) {}
 
+    private function resetDemoUserPasswords(ObjectManager $manager): void
+    {
+        $userRepository = $manager->getRepository(User::class);
+        
+        $demoEmails = [
+            'demo_admin@sports.com',
+            'demo_manager@sports.com',
+            'demo_coach@sports.com'
+        ];
+
+        foreach ($demoEmails as $email) {
+            $user = $userRepository->findOneBy(['email' => $email]);
+            
+            if ($user) {
+                // Reset password based on email
+                switch ($email) {
+                    case 'demo_admin@sports.com':
+                        $plainPassword = 'demo_admin123';
+                        break;
+                    case 'demo_manager@sports.com':
+                        $plainPassword = 'demo_manager123';
+                        break;
+                    case 'demo_coach@sports.com':
+                        $plainPassword = 'demo_coach123';
+                        break;
+                    default:
+                        continue 2;
+                }
+
+                // Hash the password
+                $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);
+                $user->setPassword($hashedPassword);
+                $manager->persist($user);
+            }
+        }
+
+        $manager->flush();
+    }
+
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create();
@@ -45,6 +84,10 @@ class UserFixtures extends Fixture
                 'password' => 'demo_manager123',
                 'imageType' => 'manager'
             ],
+        ];
+
+        // Add additional demo users
+        $demoUsers = array_merge($demoUsers, [
             [
                 'email' => 'demo_coach@sports.com',
                 'reference' => 'demo-coach',
@@ -63,7 +106,10 @@ class UserFixtures extends Fixture
                 'password' => 'demo_athlete123',
                 'imageType' => 'athlete'
             ]
-        ];
+        ]);
+
+        // Method to reset demo user passwords
+        $this->resetDemoUserPasswords($manager);
 
         // Create demo users
         foreach ($demoUsers as $userData) {
