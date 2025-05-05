@@ -109,11 +109,15 @@ class PhoneVerificationService
         // Remove non-digit characters
         $phoneNumber = preg_replace('/\D/', '', $phoneNumber);
 
-        // Prepend country code if missing
-        if (strpos($phoneNumber, '1') !== 0) {
-            $phoneNumber = '1' . $phoneNumber;
+        // If the number doesn't start with country code, assume Tunisian (+216)
+        if (!preg_match('/^(\+?216|216)/', $phoneNumber)) {
+            $phoneNumber = '216' . $phoneNumber;
         }
 
-        return '+' . $phoneNumber;
+        // Remove any leading '216' or '+216'
+        $phoneNumber = preg_replace('/^(\+?216)/', '', $phoneNumber);
+
+        // Ensure the final number is in international format
+        return '+216' . $phoneNumber;
     }
 }

@@ -1,3 +1,13 @@
 _security_logout:
     resource: security.route_loader.logout
     type: service
+
+_security_forgot_password:
+    path: /forgot-password
+    controller: App\Controller\SecurityController::forgotPassword
+    methods: [GET, POST]
+
+_security_verify_reset_token:
+    path: /verify-reset-token
+    controller: App\Controller\SecurityController::verifyResetToken
+    methods: [GET, POST]

@@ -48,28 +48,55 @@
                 <nav class="flex-1 overflow-y-auto pt-5 pb-4">
                     <div class="px-3 space-y-1 mb-4">
                         {% block sidebar_menu %}
+                            {# Common Dashboard Link #}
                             <a href="{{ path('app_home') }}" class="group flex items-center px-3 py-2 text-sm font-medium text-nike-accent hover:bg-nike-highlight rounded-md">
-                                <i data-feather="home" class="mr-3 h-5 w-5 text-gray-400 group-hover:text-brand-blue"></i>
+                                <i data-feather="home" class="mr-3 h-5 w-5 text-nike-accent group-hover:text-white"></i>
                                 Dashboard
                             </a>
-                            
-                            {% if is_granted('ROLE_COACH') %}
+
+                            {# Athlete-specific links #}
+                            {% if is_granted('ROLE_ATHLETE') and not is_granted('ROLE_COACH') and not is_granted('ROLE_MANAGER') %}
                                 <a href="#" class="group flex items-center px-3 py-2 text-sm font-medium text-nike-accent hover:bg-nike-highlight rounded-md">
-                                    <i data-feather="activity" class="mr-3 h-5 w-5 text-gray-400 group-hover:text-brand-blue"></i>
-                                    Training Management
+                                    <i data-feather="activity" class="mr-3 h-5 w-5 text-nike-accent group-hover:text-white"></i>
+                                    My Injuries
+                                </a>
+                                <a href="#" class="group flex items-center px-3 py-2 text-sm font-medium text-nike-accent hover:bg-nike-highlight rounded-md">
+                                    <i data-feather="users" class="mr-3 h-5 w-5 text-nike-accent group-hover:text-white"></i>
+                                    My Team
                                 </a>
                             {% endif %}
-                            
+
+                            {# Coach-specific links #}
+                            {% if is_granted('ROLE_COACH') %}
+                                <a href="#" class="group flex items-center px-3 py-2 text-sm font-medium text-nike-accent hover:bg-nike-highlight rounded-md">
+                                    <i data-feather="clipboard" class="mr-3 h-5 w-5 text-nike-accent group-hover:text-white"></i>
+                                    Training Management
+                                </a>
+                                <a href="#" class="group flex items-center px-3 py-2 text-sm font-medium text-nike-accent hover:bg-nike-highlight rounded-md">
+                                    <i data-feather="users" class="mr-3 h-5 w-5 text-nike-accent group-hover:text-white"></i>
+                                    Manage Teams
+                                </a>
+                            {% endif %}
+
+                            {# Manager-specific links #}
                             {% if is_granted('ROLE_MANAGER') %}
                                 <a href="#" class="group flex items-center px-3 py-2 text-sm font-medium text-nike-accent hover:bg-nike-highlight rounded-md">
-                                    <i data-feather="users" class="mr-3 h-5 w-5 text-gray-400 group-hover:text-brand-blue"></i>
+                                    <i data-feather="briefcase" class="mr-3 h-5 w-5 text-nike-accent group-hover:text-white"></i>
+                                    Facility Management
+                                </a>
+                                <a href="#" class="group flex items-center px-3 py-2 text-sm font-medium text-nike-accent hover:bg-nike-highlight rounded-md">
+                                    <i data-feather="calendar" class="mr-3 h-5 w-5 text-nike-accent group-hover:text-white"></i>
+                                    Tournaments
+                                </a>
+                                <a href="#" class="group flex items-center px-3 py-2 text-sm font-medium text-nike-accent hover:bg-nike-highlight rounded-md">
+                                    <i data-feather="users" class="mr-3 h-5 w-5 text-nike-accent group-hover:text-white"></i>
                                     Team Management
                                 </a>
                             {% endif %}
                             
                             {% if is_granted('ROLE_ATHLETE') %}
                                 <a href="#" class="group flex items-center px-3 py-2 text-sm font-medium text-nike-accent hover:bg-nike-highlight rounded-md">
-                                    <i data-feather="trending-up" class="mr-3 h-5 w-5 text-gray-400 group-hover:text-brand-blue"></i>
+                                    <i data-feather="trending-up" class="mr-3 h-5 w-5 text-nike-accent group-hover:text-white"></i>
                                     Performance Tracking
                                 </a>
                             {% endif %}

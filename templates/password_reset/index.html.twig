@@ -1,31 +1,136 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_public.html.twig' %}
 
-{% block title %}Hello PasswordResetController!{% endblock %}
+{% block title %}Password Reset Verification{% endblock %}
 
 {% block body %}
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Reset Password</h3>
-                    </div>
-                    <div class="card-body">
-                        {{ form_start(form, {'attr': {'data-turbo': 'false'}}) }}
-                        {{ form_row(form.plainPassword.first, {
-                            'label': 'New Password'
-                        }) }}
-                        {{ form_row(form.plainPassword.second, {
-                            'label': 'Repeat Password'
-                        }) }}
-
-                        <button type="submit" >
-                            Update Password
-                        </button>
-                        {{ form_end(form) }}
+    {# Confirmation Modal #}
+    <div 
+        x-data="{ showConfirmModal: false, formData: null }"
+        x-on:submit.prevent="
+            formData = $event.target;
+            showConfirmModal = true;
+            $event.stopPropagation();
+        "
+    >
+        {# Confirmation Modal #}
+        <template x-if="showConfirmModal">
+            <div class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+                <div class="relative w-auto max-w-sm mx-auto my-6">
+                    <div class="relative flex flex-col w-full bg-white border-0 rounded-lg shadow-lg outline-none focus:outline-none">
+                        <div class="flex items-start justify-between p-5 border-b border-solid rounded-t border-blueGray-200">
+                            <h3 class="text-xl font-semibold">
+                                Confirm Password Reset
+                            </h3>
+                            <button 
+                                class="float-right p-1 ml-auto text-3xl font-semibold leading-none text-black bg-transparent border-0 outline-none opacity-5 focus:outline-none"
+                                x-on:click="showConfirmModal = false"
+                            >
+                                <span class="block w-6 h-6 text-2xl text-black bg-transparent opacity-5 focus:outline-none">
+                                    ×
+                                </span>
+                            </button>
+                        </div>
+                        <div class="relative flex-auto p-6">
+                            <p class="my-4 text-blueGray-500">
+                                Are you sure you want to reset your password? You will be redirected to the login page after confirming.
+                            </p>
+                        </div>
+                        <div class="flex items-center justify-end p-6 border-t border-solid rounded-b border-blueGray-200">
+                            <button 
+                                class="px-6 py-2 mb-1 mr-1 text-sm font-bold text-black uppercase transition-all duration-150 ease-linear bg-gray-200 rounded shadow outline-none hover:bg-gray-300 focus:outline-none"
+                                type="button"
+                                x-on:click="showConfirmModal = false"
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                class="px-6 py-2 mb-1 mr-1 text-sm font-bold text-white uppercase transition-all duration-150 ease-linear bg-brand-blue rounded shadow outline-none hover:bg-brand-blue-dark focus:outline-none"
+                                type="button"
+                                x-on:click="
+                                    showConfirmModal = false; 
+                                    formData.submit();
+                                "
+                            >
+                                Confirm
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
+        </template>
+
+        <div class="sm:mx-auto sm:w-full sm:max-w-md">
+            <img class="mx-auto h-12 w-auto" src="{{ asset('images/athletesync-logo.svg') }}" alt="AthleteSync">
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                Reset Your Password
+            </h2>
+            <p class="mt-2 text-center text-sm text-gray-600">
+                Enter the 6-digit code sent to your phone
+            </p>
+        </div>
+
+    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            {{ form_start(form, {'attr': {
+                'class': 'space-y-6', 
+                'data-turbo': 'false'
+            }}) }}
+                <div>
+                    {{ form_label(form.resetToken, 'Reset Code', {
+                        'label_attr': {'class': 'block text-sm font-medium text-gray-700'}
+                    }) }}
+                    <div class="mt-1">
+                        {{ form_widget(form.resetToken, {
+                            'attr': {
+                                'class': 'appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-brand-blue focus:border-brand-blue sm:text-sm text-center',
+                                'placeholder': 'Enter 6-digit code'
+                            }
+                        }) }}
+                        {{ form_errors(form.resetToken) }}
+                    </div>
+                </div>
+
+                <div>
+                    {{ form_label(form.plainPassword.first, 'New Password', {
+                        'label_attr': {'class': 'block text-sm font-medium text-gray-700'}
+                    }) }}
+                    <div class="mt-1">
+                        {{ form_widget(form.plainPassword.first, {
+                            'attr': {
+                                'type': 'password',
+                                'class': 'appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-brand-blue focus:border-brand-blue sm:text-sm',
+                                'placeholder': 'Enter new password'
+                            }
+                        }) }}
+                        {{ form_errors(form.plainPassword.first) }}
+                    </div>
+                </div>
+
+                <div>
+                    {{ form_label(form.plainPassword.second, 'Confirm New Password', {
+                        'label_attr': {'class': 'block text-sm font-medium text-gray-700'}
+                    }) }}
+                    <div class="mt-1">
+                        {{ form_widget(form.plainPassword.second, {
+                            'attr': {
+                                'type': 'password',
+                                'class': 'appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-brand-blue focus:border-brand-blue sm:text-sm',
+                                'placeholder': 'Confirm new password'
+                            }
+                        }) }}
+                        {{ form_errors(form.plainPassword.second) }}
+                    </div>
+                </div>
+
+                <div>
+                    <button 
+                        type="submit" 
+                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-brand-blue hover:bg-brand-blue-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue"
+                    >
+                        Verify and Reset Password
+                    </button>
+                </div>
+            {{ form_end(form) }}
         </div>
     </div>
 {% endblock %}
