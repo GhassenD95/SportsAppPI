@@ -14,12 +14,23 @@ use Faker\Factory;
 
 class TrainingFixtures extends Fixture implements DependentFixtureInterface
 {
+    /**
+     * @throws \DateMalformedStringException
+     */
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create();
 
-        // Get all available teams
-        $teams = $manager->getRepository(Team::class)->findAll();
+        // Get all available teams using references
+        $teams = [];
+        for ($i = 0; $i < 6; $i++) {
+            try {
+                $teams[] = $this->getReference('team-' . $i, Team::class);
+            } catch (\Exception $e) {
+                break;
+            }
+        }
+
         if (empty($teams)) {
             throw new \RuntimeException('No teams found. Please load TeamFixtures first.');
         }
@@ -124,21 +135,31 @@ class TrainingFixtures extends Fixture implements DependentFixtureInterface
 
     private function findSuitableFacility(ObjectManager $manager, string $sport): Facility
     {
-        // Get all facilities first
-        $allFacilities = $manager->getRepository(Facility::class)->findAll();
+        // Get all facilities dynamically
+        $facilities = [];
+        $facilityIndex = 0;
+        while (true) {
+            try {
+                $facility = $this->getReference('facility-' . $facilityIndex, Facility::class);
+                $facilities[] = $facility;
+                $facilityIndex++;
+            } catch (\Exception $e) {
+                break;
+            }
+        }
 
-        if (empty($allFacilities)) {
+        if (empty($facilities)) {
             throw new \RuntimeException('No facilities found. Please load FacilityFixtures first.');
         }
 
         // Filter facilities that support the team's sport
-        $suitableFacilities = array_filter($allFacilities, function(Facility $facility) use ($sport) {
+        $suitableFacilities = array_filter($facilities, function(Facility $facility) use ($sport) {
             return in_array($sport, $facility->getSports());
         });
 
         // If no sport-specific facilities found, use all facilities
         if (empty($suitableFacilities)) {
-            $suitableFacilities = $allFacilities;
+            $suitableFacilities = $facilities;
         }
 
         // Return random facility

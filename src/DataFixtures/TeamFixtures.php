@@ -46,7 +46,7 @@ class TeamFixtures extends Fixture implements DependentFixtureInterface
 
             $manager->persist($team);
             $teams[] = $team;
-            $this->addReference('team-' . $i, $team);
+            $this->setReference('team-' . $i, $team);
         }
 
         // Randomly assign athletes to teams

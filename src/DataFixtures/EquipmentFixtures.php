@@ -81,7 +81,7 @@ class EquipmentFixtures extends Fixture implements DependentFixtureInterface
 
             // Randomly assign to facility (70% chance)
             if ($faker->boolean(70)) {
-                $facility = $this->getReference('facility_'.$faker->numberBetween(0, 29), Facility::class);
+                $facility = $this->getReference('facility-'.$faker->numberBetween(0, 29), Facility::class);
                 $equipment->setFacility($facility);
 
                 // Only assign to team if teams exist and 30% chance

@@ -52,6 +52,12 @@ class MedicalReportFixtures extends Fixture implements DependentFixtureInterface
 
         // Create medical reports for each injury
         foreach ($injuries as $injury) {
+            // Skip if a medical report for this injury already exists
+            $existingReport = $manager->getRepository(MedicalReport::class)->findOneBy(['injury' => $injury]);
+            if ($existingReport) {
+                continue;
+            }
+
             $report = new MedicalReport();
             
             // Set basic information
