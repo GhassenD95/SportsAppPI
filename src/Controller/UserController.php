@@ -33,6 +33,14 @@ final class UserController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
+            // Add flash message
+            $this->addFlash('success', 'Profile created successfully!');
+
+            // If not admin, redirect to user show page
+            if (!in_array('ROLE_ADMIN', $user->getRoles())) {
+                return $this->redirectToRoute('app_user_show', ['id' => $user->getId()]);
+            }
+
             return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -58,6 +66,14 @@ final class UserController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
+
+            // Add flash message
+            $this->addFlash('success', 'Profile updated successfully!');
+
+            // If not admin, redirect to user show page
+            if (!in_array('ROLE_ADMIN', $user->getRoles())) {
+                return $this->redirectToRoute('app_user_show', ['id' => $user->getId()]);
+            }
 
             return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
         }

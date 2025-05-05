@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}AthleteSync{% endblock %}</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     
     {% block stylesheets %}
     <script src="https://cdn.tailwindcss.com"></script>
@@ -21,6 +22,10 @@
                         'nike-highlight': '#2D2D2D', // Subtle highlight
                         'brand-red': '#FF0000',   // Vibrant red
                         'brand-blue': '#0070C9'   // Apple blue
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'ui-sans-serif', 'system-ui'],
+                        'display': ['Space Grotesk', 'ui-sans-serif', 'system-ui']
                     }
                 }
             }
@@ -30,13 +35,14 @@
 
     {% block head_javascripts %}{% endblock %}
 </head>
-<body class="h-full font-sans antialiased text-gray-100">
+<body class="h-full font-sans antialiased text-gray-100 bg-white">
     <div class="min-h-full">
         {% block sidebar %}
         <div class="fixed inset-y-0 left-0 w-64 bg-nike-black shadow-2xl z-50 transform transition-transform duration-300 ease-in-out">
             <div class="flex flex-col h-full">
-                <div class="flex items-center justify-center h-16 border-b border-nike-highlight text-white">
-                    <h1 class="text-2xl font-bold tracking-wider">AthleteSync</h1>
+                <div class="flex items-center justify-center h-16 border-b border-nike-highlight text-white px-4">
+                    <img src="{{ asset('images/athletesync-logo.svg') }}" alt="AthleteSync Logo" class="h-10 w-10 mr-3">
+                    <h1 class="text-2xl font-display font-bold tracking-wider">AthleteSync</h1>
                 </div>
                 
                 <nav class="flex-1 overflow-y-auto pt-5 pb-4">
@@ -72,19 +78,34 @@
                 </nav>
                 
                 {% block sidebar_footer %}
-                <div class="absolute bottom-0 left-0 right-0 bg-nike-gray border-t border-nike-highlight p-4 transition-all duration-300 hover:bg-nike-highlight group">
-                    <div class="flex items-center">
-                        <div class="relative">
-                            <img src="{{ app.user.imageUrl ?? asset('images/default-avatar.png') }}" alt="Profile" class="h-10 w-10 rounded-full border-2 border-transparent group-hover:border-brand-blue transition-all duration-300">
-                            <span class="absolute bottom-0 right-0 h-3 w-3 bg-brand-blue rounded-full border-2 border-nike-black"></span>
-                        </div>
-                        <div class="ml-3 flex-grow overflow-hidden">
-                            <p class="text-sm font-medium text-nike-accent truncate">{{ app.user.fullName ?? app.user.name ?? 'User' }}</p>
-                            <p class="text-xs text-gray-400 truncate">{{ app.user.roles[0] ?? 'Member' }}</p>
-                        </div>
-                        <a href="{{ path('app_logout') }}" class="text-gray-400 hover:text-brand-red transition-colors duration-300">
-                            <i data-feather="log-out" class="h-5 w-5"></i>
+                <div class="absolute bottom-0 left-0 right-0 bg-nike-gray border-t border-nike-highlight p-4 transition-all duration-300 hover:bg-nike-highlight">
+                    <div class="flex items-center justify-between">
+                        <a href="{{ path('app_user_show', {'id': app.user.id}) }}" class="flex items-center group flex-grow" title="View Profile">
+                            <div class="relative">
+                                <img src="{{ app.user.imageUrl ?? asset('images/default-avatar.png') }}" alt="Profile" class="h-10 w-10 rounded-full border-2 border-transparent group-hover:border-brand-blue transition-all duration-300">
+                                <span class="absolute bottom-0 right-0 h-3 w-3 bg-brand-blue rounded-full border-2 border-nike-black"></span>
+                            </div>
+                            <div class="ml-3 flex-grow overflow-hidden">
+                                <p class="text-sm font-medium text-nike-accent truncate group-hover:text-brand-blue transition-colors">{{ app.user.fullName ?? app.user.name ?? 'User' }}</p>
+                                <p class="text-xs text-gray-400 truncate">
+                                    {% set roleMap = {
+                                        'ROLE_ATHLETE': 'Athlete',
+                                        'ROLE_COACH': 'Coach', 
+                                        'ROLE_MANAGER': 'Manager',
+                                        'ROLE_ADMIN': 'Administrator'
+                                    } %}
+                                    {{ roleMap[app.user.roles[0]] ?? 'Member' }}
+                                </p>
+                            </div>
                         </a>
+                        <div class="flex items-center space-x-2">
+                            <a href="{{ path('app_user_show', {'id': app.user.id}) }}" class="text-gray-400 hover:text-brand-blue transition-colors" title="View Profile">
+                                <i data-feather="chevron-right" class="h-5 w-5"></i>
+                            </a>
+                            <a href="{{ path('app_logout') }}" class="text-gray-400 hover:text-brand-red transition-colors" title="Logout">
+                                <i data-feather="log-out" class="h-5 w-5"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
             {% endblock %}
@@ -95,9 +116,89 @@
         <main class="pl-64 min-h-screen">
             <div class="py-10">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    {% block content %}{% endblock %}
+                    {% block body %}{% endblock %}
                 </div>
             </div>
+
+            {# Flash Messages Container #}
+            <div 
+    x-data="{ 
+        messages: [], 
+        add(message) { 
+            this.messages.push({
+                ...message, 
+                show: true,
+                id: Date.now()
+            });
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                this.remove(message.id);
+            }, 5000);
+        },
+        remove(id) {
+            const index = this.messages.findIndex(m => m.id === id);
+            if (index !== -1) {
+                this.messages.splice(index, 1);
+            }
+        },
+        init() {
+            {% for type, messages in app.flashes %}
+                {% for message in messages %}
+                    this.add({
+                        type: '{{ type }}',
+                        text: '{{ message|e('js') }}',
+                        id: Math.random().toString(36).substring(2, 9)
+                    });
+                {% endfor %}
+            {% endfor %}
+        }
+    }" 
+    class="fixed top-0 right-0 z-50 w-full max-w-sm p-4 space-y-4 pointer-events-none"
+>
+    <template x-for="(message, index) in messages" :key="message.id">
+        <div 
+            x-show="message.show" 
+            x-transition:enter="transition ease-out duration-300 transform"
+            x-transition:enter-start="opacity-0 translate-x-full"
+            x-transition:enter-end="opacity-100 translate-x-0"
+            x-transition:leave="transition ease-in duration-300 transform"
+            x-transition:leave-start="opacity-100 translate-x-0"
+            x-transition:leave-end="opacity-0 translate-x-full"
+            class="relative w-full max-w-sm p-4 rounded-lg shadow-lg pointer-events-auto"
+            :class="{
+                'bg-green-500 text-white': message.type === 'success',
+                'bg-red-500 text-white': message.type === 'error',
+                'bg-blue-500 text-white': message.type === 'info',
+                'bg-yellow-500 text-black': message.type === 'warning'
+            }"
+        >
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <template x-if="message.type === 'success'">
+                        <i data-feather="check-circle" class="h-6 w-6 mr-3"></i>
+                    </template>
+                    <template x-if="message.type === 'error'">
+                        <i data-feather="alert-circle" class="h-6 w-6 mr-3"></i>
+                    </template>
+                    <template x-if="message.type === 'info'">
+                        <i data-feather="info" class="h-6 w-6 mr-3"></i>
+                    </template>
+                    <template x-if="message.type === 'warning'">
+                        <i data-feather="alert-triangle" class="h-6 w-6 mr-3"></i>
+                    </template>
+                    <p x-text="message.text" class="text-sm font-medium"></p>
+                </div>
+                <button 
+                    @click="remove(message.id)" 
+                    class="ml-4 cursor-pointer opacity-70 hover:opacity-100 focus:outline-none"
+                    aria-label="Close message"
+                >
+                    <i data-feather="x" class="h-5 w-5"></i>
+                </button>
+            </div>
+        </div>
+    </template>
+</div>
         </main>
     </div>
 

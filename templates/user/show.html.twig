@@ -1,42 +1,56 @@
-{% extends 'frontoffice/base.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block title %}My Profile - {{ parent() }}{% endblock %}
 
 {% block body %}
-<div class="space-y-10 divide-y divide-gray-900/10">
-    <div class="grid grid-cols-1 gap-x-8 gap-y-8 md:grid-cols-3">
-        <div class="px-4 sm:px-0">
-            <h2 class="text-base font-semibold leading-7 text-gray-900">Profile</h2>
-            <p class="mt-1 text-sm leading-6 text-gray-600">This information will be displayed publicly so be careful what you share.</p>
-        </div>
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white shadow-2xl rounded-lg p-8">
+        <h1 class="text-4xl font-display font-bold mb-8 text-black">{{ user.fullName ?? 'User Profile' }}</h1>
 
-        <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
-            <div class="px-4 py-6 sm:p-8">
-                <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                    <div class="sm:col-span-3">
-                        <label class="block text-sm font-medium leading-6 text-gray-900">First name</label>
-                        <div class="mt-2">
-                            <p class="text-sm text-gray-900">{{ user.name }}</p>
-                        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-xl border border-nike-gray/20 hover:border-brand-blue/50 transition-all duration-300">
+                <div class="flex items-center mb-4">
+                    <i data-feather="user" class="h-8 w-8 text-brand-blue mr-3"></i>
+                    <h2 class="text-xl font-display font-semibold text-black">Personal Information</h2>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">First Name</label>
+                        <p class="mt-1 text-sm text-gray-900">{{ user.name }}</p>
                     </div>
-
-                    <div class="sm:col-span-3">
-                        <label class="block text-sm font-medium leading-6 text-gray-900">Last name</label>
-                        <div class="mt-2">
-                            <p class="text-sm text-gray-900">{{ user.lastname }}</p>
-                        </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Last Name</label>
+                        <p class="mt-1 text-sm text-gray-900">{{ user.lastname }}</p>
                     </div>
-
-                    <div class="sm:col-span-4">
-                        <label class="block text-sm font-medium leading-6 text-gray-900">Email address</label>
-                        <div class="mt-2">
-                            <p class="text-sm text-gray-900">{{ user.email }}</p>
-                        </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Email</label>
+                        <p class="mt-1 text-sm text-gray-900">{{ user.email }}</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Role</label>
+                        <p class="mt-1 text-sm text-gray-900">
+                            {% set roleMap = {
+                                'ROLE_ATHLETE': 'Athlete',
+                                'ROLE_COACH': 'Coach', 
+                                'ROLE_MANAGER': 'Manager',
+                                'ROLE_ADMIN': 'Administrator'
+                            } %}
+                            {{ roleMap[user.roles[0]] ?? 'Member' }}
+                        </p>
                     </div>
                 </div>
             </div>
-            <div class="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-4 sm:px-8">
-                <a href="{{ path('app_user_edit') }}" class="rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">Edit profile</a>
+
+            <div class="bg-white p-6 rounded-xl border border-nike-gray/20 hover:border-brand-blue/50 transition-all duration-300">
+                <div class="flex items-center mb-4">
+                    <i data-feather="settings" class="h-8 w-8 text-brand-blue mr-3"></i>
+                    <h2 class="text-xl font-display font-semibold text-black">Profile Actions</h2>
+                </div>
+                <div class="space-y-4">
+                    <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="w-full rounded-md bg-brand-blue text-white px-4 py-2 text-sm font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center">
+                        <i data-feather="edit" class="h-5 w-5 mr-2"></i>Edit Profile
+                    </a>
+                </div>
             </div>
         </div>
     </div>
