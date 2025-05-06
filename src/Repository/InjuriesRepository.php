@@ -65,4 +65,21 @@ class InjuriesRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Find active injuries for a given player ID.
+     *
+     * @return Injuries[] Returns an array of active Injury objects
+     */
+    public function findActiveByPlayer(int $playerId): array
+    {
+        return $this->createQueryBuilder('i')
+            ->andWhere('i.player = :playerId')
+            ->andWhere('i.status = :status')
+            ->setParameter('playerId', $playerId)
+            ->setParameter('status', 'ACTIVE') // Assuming 'ACTIVE' is the status for current injuries
+            ->orderBy('i.injuryDate', 'DESC') // Assuming 'injuryDate' field exists
+            ->getQuery()
+            ->getResult();
+    }
 }

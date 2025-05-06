@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}AthleteSync{% endblock %}</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" href="{{ asset('images/athletesync-logo.svg') }}" type="image/svg+xml">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/feather-icons"></script>
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
@@ -78,19 +78,27 @@
                                 </a>
                             {% endif %}
 
-                            {# Manager-specific links #}
+                                                        {# Manager-specific links #}
                             {% if is_granted('ROLE_MANAGER') %}
-                                <a href="#" class="group flex items-center px-3 py-2 text-sm font-medium text-nike-accent hover:bg-nike-highlight rounded-md">
+                                <a href="{{ path('app_facility_index') }}" class="group flex items-center px-3 py-2 text-sm font-medium text-nike-accent hover:bg-nike-highlight rounded-md">
                                     <i data-feather="briefcase" class="mr-3 h-5 w-5 text-nike-accent group-hover:text-white"></i>
-                                    Facility Management
+                                    Facilities
                                 </a>
-                                <a href="#" class="group flex items-center px-3 py-2 text-sm font-medium text-nike-accent hover:bg-nike-highlight rounded-md">
+                                <a href="{{ path('app_team_index') }}" class="group flex items-center px-3 py-2 text-sm font-medium text-nike-accent hover:bg-nike-highlight rounded-md">
+                                    <i data-feather="users" class="mr-3 h-5 w-5 text-nike-accent group-hover:text-white"></i>
+                                    Teams
+                                </a>
+                                <a href="{{ path('app_tournament_index') }}" class="group flex items-center px-3 py-2 text-sm font-medium text-nike-accent hover:bg-nike-highlight rounded-md">
                                     <i data-feather="calendar" class="mr-3 h-5 w-5 text-nike-accent group-hover:text-white"></i>
                                     Tournaments
                                 </a>
-                                <a href="#" class="group flex items-center px-3 py-2 text-sm font-medium text-nike-accent hover:bg-nike-highlight rounded-md">
-                                    <i data-feather="users" class="mr-3 h-5 w-5 text-nike-accent group-hover:text-white"></i>
-                                    Team Management
+                                <a href="{{ path('app_user_index') }}" class="group flex items-center px-3 py-2 text-sm font-medium text-nike-accent hover:bg-nike-highlight rounded-md">
+                                    <i data-feather="user-check" class="mr-3 h-5 w-5 text-nike-accent group-hover:text-white"></i>
+                                    Players
+                                </a>
+                                <a href="{{ path('app_equipment_index') }}" class="group flex items-center px-3 py-2 text-sm font-medium text-nike-accent hover:bg-nike-highlight rounded-md">
+                                    <i data-feather="archive" class="mr-3 h-5 w-5 text-nike-accent group-hover:text-white"></i>
+                                    Equipment
                                 </a>
                             {% endif %}
                             

@@ -27,6 +27,22 @@ class MatchEventRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * Find the single next upcoming match for a given team ID (home or away).
+     */
+    public function findOneUpcomingByTeam(int $teamId): ?MatchEvent
+    {
+        return $this->createQueryBuilder('m')
+            ->where('m.homeTeam = :teamId') // Only check the homeTeam relation
+            ->andWhere('m.date > :now')
+            ->setParameter('teamId', $teamId)
+            ->setParameter('now', new \DateTime())
+            ->orderBy('m.date', 'ASC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     //    /**
     //     * @return MatchEvent[] Returns an array of MatchEvent objects
     //     */

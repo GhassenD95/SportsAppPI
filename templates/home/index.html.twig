@@ -72,32 +72,70 @@
             </div>
         {% endif %}
 
-        {% if is_granted('ROLE_ATHLETE') %}
-            <div class="bg-white p-6 rounded-xl border border-nike-gray/20 hover:border-brand-blue/50 transition-all duration-300 transform hover:-translate-y-2">
-                <div class="flex items-center mb-4">
-                    <i data-feather="trending-up" class="h-8 w-8 text-brand-blue mr-3"></i>
-                    <h2 class="text-xl font-display font-semibold text-black">{{ roleMap['ROLE_ATHLETE'] }} Dashboard</h2>
+        {% if is_granted('ROLE_ATHLETE') and not is_granted('ROLE_COACH') and not is_granted('ROLE_MANAGER') %}
+            {# Athlete Dashboard Content - Now Dynamic #}
+            <div class="bg-white p-6 rounded-xl border border-nike-gray/20 hover:border-brand-blue/50 transition-all duration-300 transform hover:-translate-y-2 col-span-1 md:col-span-2 lg:col-span-3">
+                <div class="flex items-center mb-6">
+                    <i data-feather="user" class="h-8 w-8 text-brand-blue mr-3"></i>
+                    <h2 class="text-2xl font-display font-semibold text-black">Athlete Dashboard</h2>
                 </div>
-                <ul class="space-y-2 text-gray-700">
-                    <li class="flex items-center">
-                        <svg class="h-4 w-4 text-brand-red mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd"/>
-                        </svg>
-                        Personal Performance
-                    </li>
-                    <li class="flex items-center">
-                        <svg class="h-4 w-4 text-vibrant-accent mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd"/>
-                        </svg>
-                        Training Schedule
-                    </li>
-                    <li class="flex items-center">
-                        <svg class="h-4 w-4 text-vibrant-accent mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd"/>
-                        </svg>
-                        Injury Tracking
-                    </li>
-                </ul>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    
+                    {# Team & Schedule Card #}
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h3 class="text-lg font-semibold mb-3 text-gray-800 border-b pb-2">Team & Schedule</h3>
+                        <div class="space-y-3">
+                            <p><strong class="text-gray-700">Team:</strong> {{ team_details.name | default('No team assigned') }}</p>
+                            <div>
+                                <strong class="text-gray-700">Next Training:</strong>
+                                {% if upcoming_training %}
+                                    <p class="text-gray-800 ml-2">{{ upcoming_training.name | default('N/A') }} - {{ upcoming_training.startTime | date('D, M j @ H:i') }}</p>
+                                {% else %}
+                                    <p class="text-gray-600 ml-2">None scheduled</p>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <strong class="text-gray-700">Next Match:</strong>
+                                {% if upcoming_match %}
+                                    <p class="text-gray-800 ml-2">{{ upcoming_match.displayTitle }} - {{ upcoming_match.date | date('D, M j @ H:i') }}</p>
+                                {% else %}
+                                    <p class="text-gray-600 ml-2">None scheduled</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    {# Performance Card #}
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h3 class="text-lg font-semibold mb-3 text-gray-800 border-b pb-2">Latest Performance</h3>
+                        {% if latest_performance %}
+                            <div class="space-y-2">
+                                <p><strong class="text-gray-700">Date:</strong> <span class="text-gray-900">{{ latest_performance.performanceDate | date('Y-m-d') }}</span></p>
+                                <p><strong class="text-gray-700">Rating:</strong> <span class="font-bold text-brand-blue">{{ latest_performance.rating | default('N/A') }}</span></p>
+                                <p><strong class="text-gray-700">Goals:</strong> <span class="text-gray-900">{{ latest_performance.goalsScored | default(0) }}</span></p>
+                                <p><strong class="text-gray-700">Assists:</strong> <span class="text-gray-900">{{ latest_performance.assists | default(0) }}</span></p>
+                                <p><strong class="text-gray-700">Comments:</strong> <span class="text-gray-900">{{ latest_performance.comments | default('None') }}</span></p>
+                            </div>
+                        {% else %}
+                            <p class="text-gray-600">No performance data recorded yet.</p>
+                        {% endif %}
+                    </div>
+
+                    {# Injuries Card #}
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h3 class="text-lg font-semibold mb-3 text-gray-800 border-b pb-2">Active Injuries</h3>
+                        {% if active_injuries is not empty %}
+                            <ul class="list-disc list-inside text-brand-red space-y-1">
+                                {% for injury in active_injuries %}
+                                    <li>{{ injury.injuryType | default('Unknown') }} (Reported: {{ injury.injuryDate | date('Y-m-d') }})</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="text-green-600">No active injuries reported. Stay healthy!</p>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         {% endif %}
     </div>

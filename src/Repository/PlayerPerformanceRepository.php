@@ -62,4 +62,18 @@ class PlayerPerformanceRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-} 
+
+    /**
+     * Find the latest performance record for a given player ID.
+     */
+    public function findLatestByPlayer(int $playerId): ?PlayerPerformance
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.player = :playerId')
+            ->setParameter('playerId', $playerId)
+            ->orderBy('p.performanceDate', 'DESC') // Use correct field name
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+}

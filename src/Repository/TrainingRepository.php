@@ -112,4 +112,20 @@ class TrainingRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    /**
+     * Find the single next upcoming training session for a given team ID.
+     */
+    public function findOneUpcomingByTeam(int $teamId): ?Training
+    {
+        return $this->createQueryBuilder('t')
+            ->andWhere('t.team = :teamId')
+            ->andWhere('t.startTime > :now')
+            ->setParameter('teamId', $teamId)
+            ->setParameter('now', new \DateTime())
+            ->orderBy('t.startTime', 'ASC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }
