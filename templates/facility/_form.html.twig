@@ -1,4 +1,76 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+{{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+
+    {# Name Field #}
+    <div>
+        {{ form_label(form.name, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+        {{ form_widget(form.name, {'attr': {'class': 'block w-full mt-1 px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-brand-blue focus:border-brand-blue sm:text-sm'}}) }}
+        <div class="mt-1 text-xs text-red-600">
+            {{ form_errors(form.name) }}
+        </div>
+    </div>
+
+    {# Location Field #}
+    <div>
+        {{ form_label(form.location, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+        {{ form_widget(form.location, {'attr': {'class': 'block w-full mt-1 px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-brand-blue focus:border-brand-blue sm:text-sm'}}) }}
+        <div class="mt-1 text-xs text-red-600">
+            {{ form_errors(form.location) }}
+        </div>
+    </div>
+
+    {# Image File Upload - Custom Styling with dynamic ID #}
+    <div>
+        {{ form_label(form.imageFile, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+        <div class="mt-1 flex items-center">
+            {# Let Symfony generate the ID for the input; it will be available via form.imageFile.vars.id #}
+            {{ form_widget(form.imageFile, {'attr': {'class': 'hidden'}}) }}
+            <label for="{{ form.imageFile.vars.id }}" 
+                   class="cursor-pointer bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow hover:shadow-lg transition duration-150 ease-in-out text-sm">
+                <i data-feather="upload-cloud" class="inline-block mr-2 h-4 w-4"></i> Choose Image
+            </label>
+            <span id="facility_image_filename" class="ml-3 text-sm text-gray-500">No file chosen</span>
+        </div>
+        <p class="mt-1 text-xs text-gray-500">
+            Upload an image for the facility (e.g., stadium.jpg). Max size 2MB. JPG or PNG.
+        </p>
+        <div class="mt-1 text-xs text-red-600">
+            {{ form_errors(form.imageFile) }}
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('{{ form.imageFile.vars.id }}');
+            const filenameDisplay = document.getElementById('facility_image_filename'); // This ID is for the span, it's static and fine.
+            if (fileInput && filenameDisplay) {
+                fileInput.addEventListener('change', function(e) {
+                    if (e.target.files.length > 0) {
+                        filenameDisplay.textContent = e.target.files[0].name;
+                    } else {
+                        filenameDisplay.textContent = 'No file chosen';
+                    }
+                });
+            }
+            // If you're using Feather Icons, uncomment this:
+            // feather.replace(); 
+        });
+    </script>
+
+    {# Sports Field #}
+    <div>
+        {{ form_label(form.sports, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+        {{ form_widget(form.sports, {'attr': {'class': 'block w-full mt-1 px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue focus:border-brand-blue sm:text-sm'}}) }}
+        <div class="mt-1 text-xs text-red-600">
+            {{ form_errors(form.sports) }}
+        </div>
+    </div>
+
+    {# Submit Button #}
+    <div class="flex justify-end pt-4">
+        <button type="submit" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-brand-blue hover:bg-brand-blue-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue transition-colors duration-150 ease-in-out">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z" /></svg>
+            {{ button_label|default('Save Facility') }}
+        </button>
+    </div>
+
 {{ form_end(form) }}
