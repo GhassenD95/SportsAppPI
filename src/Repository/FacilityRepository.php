@@ -21,11 +21,13 @@ class FacilityRepository extends ServiceEntityRepository
      * @param string|null $name
      * @param string|null $location
      * @param array|null $sports
+     * @param bool|null $managedByMe
+     * @param \Symfony\Component\Security\Core\User\UserInterface|null $currentUser
      * @param int $page
      * @param int $limit
      * @return Paginator Returns a Paginator object
      */
-    public function findByFilters(?string $name, ?string $location, ?array $sports, int $page = 1, int $limit = 9): Paginator
+    public function findByFilters(?string $name, ?string $location, ?array $sports, ?bool $managedByMe, ?\Symfony\Component\Security\Core\User\UserInterface $currentUser, int $page = 1, int $limit = 9): Paginator
     {
         $qb = $this->createQueryBuilder('f')
             ->orderBy('f.name', 'ASC');
@@ -38,6 +40,11 @@ class FacilityRepository extends ServiceEntityRepository
         if ($location) {
             $qb->andWhere('LOWER(f.location) LIKE LOWER(:location)')
                 ->setParameter('location', '%' . $location . '%');
+        }
+
+        if ($managedByMe && $currentUser) {
+            $qb->andWhere('f.manager = :managerId')
+               ->setParameter('managerId', $currentUser->getId());
         }
 
         if ($sports && !empty($sports)) {

@@ -31,10 +31,16 @@ final class FacilityController extends AbstractController
         $name = $request->query->get('name');
         $location = $request->query->get('location');
         $sports = $request->query->all('sports'); // Get all sports as an array
+        $managedByMe = $request->query->getBoolean('managed_by_me'); // Get as boolean
         $page = $request->query->getInt('page', 1);
         $limit = 9; // Or get from request/configuration
 
-        $facilitiesPaginator = $facilityRepository->findByFilters($name, $location, $sports, $page, $limit);
+        $currentUser = null;
+        if ($managedByMe && $this->getUser() && $this->isGranted('ROLE_MANAGER')) {
+            $currentUser = $this->getUser();
+        }
+
+        $facilitiesPaginator = $facilityRepository->findByFilters($name, $location, $sports, $managedByMe, $currentUser, $page, $limit);
 
         return $this->render('facility/index.html.twig', [
             'facilities' => $facilitiesPaginator,
@@ -43,6 +49,7 @@ final class FacilityController extends AbstractController
                 'name' => $name,
                 'location' => $location,
                 'sports' => $sports,
+                'managed_by_me' => $managedByMe,
             ],
             'currentPage' => $page,
             'totalPages' => ceil($facilitiesPaginator->count() / $limit),

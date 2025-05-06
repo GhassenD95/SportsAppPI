@@ -25,8 +25,8 @@
 
                 {# Sports Offered Filter - Checkboxes #}
                 <div class="flex-grow">
-                    <span class="block text-sm font-medium text-slate-700 mb-2 sm:sr-only">Sports Offered</span> {# Visible on mobile, SR only on sm+ #}
-                    <div class="flex flex-wrap gap-x-4 gap-y-2 items-center">
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Sports Offered</label>
+                    <div class="mt-2 flex flex-wrap gap-x-4 gap-y-3 items-center">
                         {% for display_sport, sport_value in all_sports %}
                             <div class="flex items-center">
                                 <input type="checkbox" id="sport_{{ sport_value }}" name="sports[]" value="{{ sport_value }}" 
@@ -38,20 +38,32 @@
                     </div>
                 </div>
 
-                {# Action Buttons #}
-                <div class="flex space-x-2 flex-shrink-0 sm:self-end">
-                    <button type="submit" 
-                            class="inline-flex items-center justify-center px-4 py-2.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white 
-                                   bg-brand-blue hover:bg-brand-blue-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue transition-all duration-150 ease-in-out">
-                        <i data-feather="filter" class="h-4 w-4"></i>
-                        <span class="sr-only sm:not-sr-only sm:ml-2">Filter</span>
-                    </button>
-                    <a href="{{ path('app_facility_index') }}" 
-                       class="inline-flex items-center justify-center px-4 py-2.5 border border-slate-300 text-sm font-medium rounded-md shadow-sm text-slate-700 
-                              bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue transition-all duration-150 ease-in-out">
-                        <i data-feather="rotate-ccw" class="h-4 w-4"></i>
-                        <span class="sr-only sm:not-sr-only sm:ml-2">Reset</span>
-                    </a>
+                {# Action Group: My Facilities Filter (Managers) & Buttons #}
+                <div class="flex flex-col sm:flex-row sm:items-end sm:space-x-3 space-y-4 sm:space-y-0 pt-4 sm:pt-0 flex-shrink-0">
+                    {% if is_granted('ROLE_MANAGER') and app.user %}
+                    <div class="flex items-center sm:mb-2.5"> {# sm:mb-2.5 to align with button baseline approx #}
+                        <input type="checkbox" id="filter_managed_by_me" name="managed_by_me" value="1" 
+                               {{ current_filters.managed_by_me ? 'checked' : '' }}
+                               class="h-4 w-4 text-brand-blue border-slate-300 rounded focus:ring-brand-blue focus:ring-offset-0 focus:ring-1 shadow-sm">
+                        <label for="filter_managed_by_me" class="ml-2 text-sm text-slate-700 whitespace-nowrap">My Facilities</label>
+                    </div>
+                    {% endif %}
+
+                    {# Action Buttons #}
+                    <div class="flex space-x-2">
+                        <button type="submit" 
+                                class="inline-flex items-center justify-center px-4 py-2.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white 
+                                       bg-brand-blue hover:bg-brand-blue-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue transition-all duration-150 ease-in-out">
+                            <i data-feather="filter" class="h-4 w-4"></i>
+                            <span class="sr-only sm:not-sr-only sm:ml-2">Filter</span>
+                        </button>
+                        <a href="{{ path('app_facility_index') }}" 
+                           class="inline-flex items-center justify-center px-4 py-2.5 border border-slate-300 text-sm font-medium rounded-md shadow-sm text-slate-700 
+                                  bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue transition-all duration-150 ease-in-out">
+                            <i data-feather="rotate-ccw" class="h-4 w-4"></i>
+                            <span class="sr-only sm:not-sr-only sm:ml-2">Reset</span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </form>
@@ -144,7 +156,7 @@
                     <div class="-mt-px flex w-0 flex-1">
                         {% if currentPage > 1 %}
                             <a href="{{ path('app_facility_index', current_filters|merge({page: currentPage - 1})) }}"
-                               class="inline-flex items-center border-t-2 border-transparent pr-1 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
+                               class="inline-flex items-center border-t-2 border-transparent pr-1 pt-4 text-sm font-medium text-black hover:border-gray-300 hover:text-gray-700">
                                 <i data-feather="arrow-left" class="mr-3 h-5 w-5 text-gray-400"></i>
                                 Previous
                             </a>
@@ -153,17 +165,17 @@
                     <div class="hidden md:-mt-px md:flex">
                         {% for i in 1..totalPages %}
                             {% if i == currentPage %}
-                                <span class="inline-flex items-center border-t-2 border-brand-blue px-4 pt-4 text-sm font-medium text-brand-blue-dark" aria-current="page">{{ i }}</span>
+                                <span class="inline-flex items-center border-t-2 border-indigo-500 px-4 pt-4 text-sm font-medium text-indigo-600" aria-current="page">{{ i }}</span>
                             {% else %}
                                 <a href="{{ path('app_facility_index', current_filters|merge({page: i})) }}"
-                                   class="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">{{ i }}</a>
+                                   class="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-black hover:border-gray-300 hover:text-gray-700">{{ i }}</a>
                             {% endif %}
                         {% endfor %}
                     </div>
                     <div class="-mt-px flex w-0 flex-1 justify-end">
                         {% if currentPage < totalPages %}
                             <a href="{{ path('app_facility_index', current_filters|merge({page: currentPage + 1})) }}"
-                               class="inline-flex items-center border-t-2 border-transparent pl-1 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
+                               class="inline-flex items-center border-t-2 border-transparent pl-1 pt-4 text-sm font-medium text-black hover:border-gray-300 hover:text-gray-700">
                                 Next
                                 <i data-feather="arrow-right" class="ml-3 h-5 w-5 text-gray-400"></i>
                             </a>
