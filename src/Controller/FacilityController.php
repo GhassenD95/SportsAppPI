@@ -116,6 +116,7 @@ final class FacilityController extends AbstractController
     {
         return $this->render('facility/show.html.twig', [
             'facility' => $facility,
+            'all_sports' => Sport::choices(), // Pass sport choices
         ]);
     }
 

@@ -1,38 +1,86 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Facility{% endblock %}
+{% block title %}{{ facility.name }} - Facility Details{% endblock %}
 
 {% block body %}
-    <h1>Facility</h1>
+<div class="bg-slate-50 min-h-screen py-8 sm:py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ facility.id }}</td>
-            </tr>
-            <tr>
-                <th>Name</th>
-                <td>{{ facility.name }}</td>
-            </tr>
-            <tr>
-                <th>Location</th>
-                <td>{{ facility.location }}</td>
-            </tr>
-            <tr>
-                <th>Image_url</th>
-                <td>{{ facility.imageUrl }}</td>
-            </tr>
-            <tr>
-                <th>Sports</th>
-                <td>{{ facility.sports ? facility.sports|json_encode : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+        <div class="mb-8">
+            <a href="{{ path('app_facility_index') }}" class="inline-flex items-center text-sm font-medium text-slate-600 hover:text-brand-blue group">
+                <i data-feather="arrow-left" class="h-5 w-5 mr-2 text-slate-400 group-hover:text-brand-blue transition-colors"></i>
+                Back to Facilities
+            </a>
+        </div>
 
-    <a href="{{ path('app_facility_index') }}">back to list</a>
+        <div class="bg-white shadow-xl rounded-lg overflow-hidden">
+            <div class="md:flex">
+                {# Left Column: Image #}
+                <div class="md:w-1/2">
+                    {% if facility.imageUrl %}
+                        <img src="{{ asset('uploads/facilities/' ~ facility.imageUrl) }}" alt="{{ facility.name }}" class="h-64 w-full object-cover md:h-full">
+                    {% else %}
+                        <div class="h-64 w-full bg-slate-200 flex items-center justify-center md:h-full">
+                            <i data-feather="image" class="h-24 w-24 text-slate-400"></i>
+                        </div>
+                    {% endif %}
+                </div>
 
-    <a href="{{ path('app_facility_edit', {'id': facility.id}) }}">edit</a>
+                {# Right Column: Details & Actions #}
+                <div class="md:w-1/2 p-6 sm:p-8">
+                    <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-slate-800 mb-1">{{ facility.name }}</h1>
+                    
+                    <div class="mt-4 text-slate-600">
+                        <div class="flex items-center mb-3">
+                            <i data-feather="map-pin" class="h-5 w-5 mr-3 text-slate-400 flex-shrink-0"></i>
+                            <span>{{ facility.location }}</span>
+                        </div>
 
-    {{ include('facility/_delete_form.html.twig') }}
+                        {% if facility.manager %}
+                        <div class="flex items-center mb-3">
+                            <i data-feather="user" class="h-5 w-5 mr-3 text-slate-400 flex-shrink-0"></i>
+                            <span>Managed by: {{ facility.manager.email }}</span> {# Assuming email is the desired identifier #}
+                        </div>
+                        {% endif %}
+                        
+                       
+                    </div>
+
+                    {% if facility.sports and facility.sports|length > 0 %}
+                        <div class="mt-6 pt-6 border-t border-slate-200">
+                            <h2 class="text-sm font-medium text-slate-500 mb-3">Sports Offered</h2>
+                            <div class="flex flex-wrap gap-2">
+                                {% for display_name, enum_value in all_sports %}
+                                    {% if enum_value in facility.sports %}
+                                        <span class="px-3 py-1 text-xs font-semibold text-indigo-700 bg-indigo-100 rounded-full">
+                                            {{ display_name }}
+                                        </span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="mt-8 pt-6 border-t border-slate-200">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-3 space-y-3 sm:space-y-0">
+                            <a href="{{ path('app_facility_edit', {'id': facility.id}) }}" class="w-full sm:w-auto inline-flex items-center justify-center px-5 py-2.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-brand-blue hover:bg-brand-blue-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue transition-colors duration-150">
+                                <i data-feather="edit-2" class="h-4 w-4 mr-2"></i>Edit Facility
+                            </a>
+                            
+                            {# Delete Form - styled button trigger #}
+                            <div class="w-full sm:w-auto">
+                                {{ include('facility/_delete_form.html.twig', {
+                                    button_class: 'w-full sm:w-auto inline-flex items-center justify-center px-5 py-2.5 border border-slate-300 text-sm font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-150',
+                                    button_text: 'Delete',
+                                    icon_name: 'trash-2',
+                                    facility_name: facility.name
+                                }) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
