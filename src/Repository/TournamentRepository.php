@@ -5,15 +5,33 @@ namespace App\Repository;
 use App\Entity\Tournament;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\PaginatorInterface;
+use Knp\Component\Pager\Pagination\PaginationInterface;
 
 /**
  * @extends ServiceEntityRepository<Tournament>
  */
 class TournamentRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private PaginatorInterface $paginator;
+
+    public function __construct(ManagerRegistry $registry, PaginatorInterface $paginator)
     {
         parent::__construct($registry, Tournament::class);
+        $this->paginator = $paginator;
+    }
+
+    public function findByCriteriaPaginated(int $page, int $limit = 9): PaginationInterface
+    {
+        $queryBuilder = $this->createQueryBuilder('t')
+            ->orderBy('t.start_date', 'DESC') // Corrected field name
+            ->getQuery();
+
+        return $this->paginator->paginate(
+            $queryBuilder, 
+            $page,
+            $limit
+        );
     }
 
     //    /**
