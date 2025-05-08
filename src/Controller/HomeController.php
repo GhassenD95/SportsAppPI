@@ -73,31 +73,31 @@ final class HomeController extends AbstractController
 
     private function getAthleteDashboardData(User $user): array
     {
-        $team = $user->getTeam();
+        $team = $user->getTeam(); // This seems to fetch a single team, an athlete might be in multiple via User->getTeams()
         $athleteId = $user->getId();
-        $teamId = $team ? $team->getId() : null;
+        // $teamId = $team ? $team->getId() : null; // Not directly used for new training queries
 
-        $upcomingTraining = null;
+        // Use new methods from TrainingRepository
+        $upcomingTrainings = $this->trainingRepository->findUpcomingByAthlete($user, 5);
+        $trainingsThisMonthCount = $this->trainingRepository->countTrainingsThisMonthByAthlete($user);
+
+        // Existing logic for upcoming match (assuming it's singular and based on one primary team or different logic)
         $upcomingMatch = null;
-
-        if ($teamId) {
-            // Assuming findUpcomingByTeam methods exist or will be added
-            // These should fetch the *next* one session/match for the team
-            $upcomingTraining = $this->trainingRepository->findOneUpcomingByTeam($teamId);
-            $upcomingMatch = $this->matchEventRepository->findOneUpcomingByTeam($teamId);
+        if ($team) { // If relying on a single primary team concept for matches
+            $upcomingMatch = $this->matchEventRepository->findOneUpcomingByTeam($team->getId());
         }
 
-        // Assuming findLatestByPlayer and findActiveByPlayer methods exist or will be added
         $latestPerformance = $this->playerPerformanceRepository->findLatestByPlayer($athleteId);
         $activeInjuries = $this->injuriesRepository->findActiveByPlayer($athleteId);
 
         return [
-            'team_details' => $team,
-            'upcoming_training' => $upcomingTraining,
+            'team_details' => $team, // Keep for other parts of the dashboard if needed
+            'athlete_upcoming_trainings' => $upcomingTrainings,
+            'athlete_trainings_this_month_count' => $trainingsThisMonthCount,
             'upcoming_match' => $upcomingMatch,
             'latest_performance' => $latestPerformance,
             'active_injuries' => $activeInjuries,
-            'team_id' => $teamId, // Pass the already fetched team ID
+            // 'team_id' => $teamId, // No longer strictly needed for the new training queries here
         ];
     }
 

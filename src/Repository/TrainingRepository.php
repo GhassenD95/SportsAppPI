@@ -216,4 +216,43 @@ class TrainingRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    public function findUpcomingByAthlete(User $athlete, int $limit = 5): array
+    {
+        if ($athlete->getTeams()->isEmpty()) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('t')
+            ->join('t.team', 'team')
+            ->andWhere('team IN (:teams)')
+            ->andWhere('t.startTime > :now')
+            ->setParameter('teams', $athlete->getTeams()->toArray())
+            ->setParameter('now', new \DateTime())
+            ->orderBy('t.startTime', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function countTrainingsThisMonthByAthlete(User $athlete): int
+    {
+        if ($athlete->getTeams()->isEmpty()) {
+            return 0;
+        }
+
+        $startOfMonth = new \DateTime('first day of this month 00:00:00');
+        $endOfMonth = new \DateTime('last day of this month 23:59:59');
+
+        return (int) $this->createQueryBuilder('t')
+            ->select('COUNT(t.id)')
+            ->join('t.team', 'team')
+            ->andWhere('team IN (:teams)')
+            ->andWhere('t.startTime BETWEEN :startOfMonth AND :endOfMonth')
+            ->setParameter('teams', $athlete->getTeams()->toArray())
+            ->setParameter('startOfMonth', $startOfMonth)
+            ->setParameter('endOfMonth', $endOfMonth)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

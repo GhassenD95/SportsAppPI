@@ -170,67 +170,116 @@
         {% endif %}
 
         {% if is_granted('ROLE_ATHLETE') and not is_granted('ROLE_COACH') and not is_granted('ROLE_MANAGER') %}
-            {# Athlete Dashboard Content - Now Dynamic #}
-            <div class="bg-white p-6 rounded-xl border border-nike-gray/20 hover:border-brand-blue/50 transition-all duration-300 transform hover:-translate-y-2 col-span-1 md:col-span-2 lg:col-span-3">
+            <div class="col-span-1 md:col-span-2 bg-white p-6 rounded-xl border border-nike-gray/20 shadow-lg">
                 <div class="flex items-center mb-6">
                     <i data-feather="user" class="h-8 w-8 text-brand-blue mr-3"></i>
-                    <h2 class="text-2xl font-display font-semibold text-black">Athlete Dashboard</h2>
+                    <h2 class="text-2xl font-display font-semibold text-gray-800">Athlete Dashboard</h2>
                 </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    
-                    {# Team & Schedule Card #}
-                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                        <h3 class="text-lg font-semibold mb-3 text-gray-800 border-b pb-2">Team & Schedule</h3>
-                        <div class="space-y-3">
-                            <p><strong class="text-gray-700">Team:</strong> {{ team_details.name | default('No team assigned') }}</p>
-                            <div>
-                                <strong class="text-gray-700">Next Training:</strong>
-                                {% if upcoming_training %}
-                                    <p class="text-gray-800 ml-2">{{ upcoming_training.name | default('N/A') }} - {{ upcoming_training.startTime | date('D, M j @ H:i') }}</p>
-                                {% else %}
-                                    <p class="text-gray-600 ml-2">None scheduled</p>
-                                {% endif %}
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {# Column 1: Training Focus #}
+                    <div class="lg:col-span-1 space-y-6">
+                        {# Trainings This Month Card #}
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                            <div class="flex items-center mb-2">
+                                <i data-feather="calendar" class="h-6 w-6 text-indigo-500 mr-2"></i>
+                                <h3 class="text-lg font-semibold text-gray-700">This Month's Trainings</h3>
                             </div>
-                            <div>
-                                <strong class="text-gray-700">Next Match:</strong>
-                                {% if upcoming_match %}
-                                    <p class="text-gray-800 ml-2">{{ upcoming_match.displayTitle }} - {{ upcoming_match.date | date('D, M j @ H:i') }}</p>
-                                {% else %}
-                                    <p class="text-gray-600 ml-2">None scheduled</p>
-                                {% endif %}
+                            <p class="text-3xl font-bold text-gray-800">{{ athlete_trainings_this_month_count | default(0) }}
+                                <span class="text-sm font-normal text-gray-600">session(s)</span>
+                            </p>
+                        </div>
+
+                        {# Upcoming Trainings Card #}
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                            <div class="flex items-center mb-3">
+                                <i data-feather="chevrons-right" class="h-6 w-6 text-teal-500 mr-2"></i>
+                                <h3 class="text-lg font-semibold text-gray-700">Your Upcoming Sessions</h3>
                             </div>
+                            {% if athlete_upcoming_trainings is defined and athlete_upcoming_trainings is not empty %}
+                                <ul class="space-y-3">
+                                    {% for training in athlete_upcoming_trainings %}
+                                        <li class="p-3 bg-white rounded-md shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                                            <p class="font-semibold text-gray-700">{{ training.title }}</p>
+                                            <p class="text-sm text-gray-500">{{ training.startTime|date('D, M j @ H:i') }}</p>
+                                            {% if training.facility %}
+                                                <p class="text-xs text-gray-400"><i data-feather="map-pin" class="inline-block h-3 w-3 mr-1"></i>{{ training.facility.name }}</p>
+                                            {% endif %}
+                                            {% if training.team %}
+                                                <p class="text-xs text-gray-400"><i data-feather="users" class="inline-block h-3 w-3 mr-1"></i>{{ training.team.name }}</p>
+                                            {% endif %}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-gray-600">No upcoming training sessions scheduled.</p>
+                            {% endif %}
                         </div>
                     </div>
 
-                    {# Performance Card #}
-                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                        <h3 class="text-lg font-semibold mb-3 text-gray-800 border-b pb-2">Latest Performance</h3>
-                        {% if latest_performance %}
-                            <div class="space-y-2">
-                                <p><strong class="text-gray-700">Date:</strong> <span class="text-gray-900">{{ latest_performance.performanceDate | date('Y-m-d') }}</span></p>
-                                <p><strong class="text-gray-700">Rating:</strong> <span class="font-bold text-brand-blue">{{ latest_performance.rating | default('N/A') }}</span></p>
-                                <p><strong class="text-gray-700">Goals:</strong> <span class="text-gray-900">{{ latest_performance.goalsScored | default(0) }}</span></p>
-                                <p><strong class="text-gray-700">Assists:</strong> <span class="text-gray-900">{{ latest_performance.assists | default(0) }}</span></p>
-                                <p><strong class="text-gray-700">Comments:</strong> <span class="text-gray-900">{{ latest_performance.comments | default('None') }}</span></p>
+                    {# Column 2: Match & Team Info #}
+                    <div class="lg:col-span-1 space-y-6">
+                        {# Next Match Card #}
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                            <div class="flex items-center mb-3">
+                                <i data-feather="flag" class="h-6 w-6 text-red-500 mr-2"></i>
+                                <h3 class="text-lg font-semibold text-gray-700">Next Match</h3>
                             </div>
-                        {% else %}
-                            <p class="text-gray-600">No performance data recorded yet.</p>
-                        {% endif %}
+                            {% if upcoming_match %}
+                                <p class="font-semibold text-gray-700">{{ upcoming_match.displayTitle }}</p>
+                                <p class="text-sm text-gray-500">{{ upcoming_match.date|date('D, M j @ H:i') }}</p>
+                                {% if upcoming_match.location %}
+                                    <p class="text-xs text-gray-400"><i data-feather="map-pin" class="inline-block h-3 w-3 mr-1"></i>{{ upcoming_match.location }}</p>
+                                {% endif %}
+                            {% else %}
+                                <p class="text-gray-600">No upcoming matches scheduled.</p>
+                            {% endif %}
+                        </div>
+
+                        {# Team Details Card #}
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                             <div class="flex items-center mb-3">
+                                <i data-feather="shield" class="h-6 w-6 text-blue-500 mr-2"></i>
+                                <h3 class="text-lg font-semibold text-gray-700">Your Primary Team</h3>
+                            </div>
+                            <p class="text-gray-700">{{ team_details.name | default('Not assigned to a primary team') }}</p>
+                        </div>
                     </div>
 
-                    {# Injuries Card #}
-                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                        <h3 class="text-lg font-semibold mb-3 text-gray-800 border-b pb-2">Active Injuries</h3>
-                        {% if active_injuries is not empty %}
-                            <ul class="list-disc list-inside text-brand-red space-y-1">
-                                {% for injury in active_injuries %}
-                                    <li>{{ injury.injuryType | default('Unknown') }} (Reported: {{ injury.injuryDate | date('Y-m-d') }})</li>
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            <p class="text-green-600">No active injuries reported. Stay healthy!</p>
-                        {% endif %}
+                    {# Column 3: Performance & Health #}
+                    <div class="lg:col-span-1 space-y-6">
+                        {# Performance Snapshot Card #}
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                            <div class="flex items-center mb-3">
+                                <i data-feather="activity" class="h-6 w-6 text-green-500 mr-2"></i>
+                                <h3 class="text-lg font-semibold text-gray-700">Latest Performance</h3>
+                            </div>
+                            {% if latest_performance %}
+                                <ul class="space-y-1 text-sm text-gray-600">
+                                    <li><strong class="text-gray-700">Metrics:</strong> {{ latest_performance.metrics | default('N/A') }}</li>
+                                    <li><strong class="text-gray-700">Recorded:</strong> {{ latest_performance.performanceDate | date('M j, Y') }}</li>
+                                </ul>
+                            {% else %}
+                                <p class="text-gray-600">No performance data recorded yet.</p>
+                            {% endif %}
+                        </div>
+
+                        {# Active Injuries Card #}
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                            <div class="flex items-center mb-3">
+                                <i data-feather="alert-triangle" class="h-6 w-6 text-yellow-500 mr-2"></i>
+                                <h3 class="text-lg font-semibold text-gray-700">Active Injuries</h3>
+                            </div>
+                            {% if active_injuries is defined and active_injuries is not empty %}
+                                <ul class="space-y-2">
+                                    {% for injury in active_injuries %}
+                                        <li class="text-sm text-gray-600">{{ injury.description }} ({{ injury.status }})</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-gray-600">No active injuries reported. Stay healthy!</p>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
