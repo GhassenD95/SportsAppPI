@@ -3,8 +3,12 @@
 namespace App\Repository;
 
 use App\Entity\Training;
+use App\Entity\User;
+use App\Entity\Team;
+use App\Entity\Facility;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use \DateTimeInterface;
 
 /**
  * @extends ServiceEntityRepository<Training>
@@ -86,6 +90,45 @@ class TrainingRepository extends ServiceEntityRepository
             ->orderBy('t.startTime', 'DESC')
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * @return Training[] Returns an array of Training objects
+     */
+    public function findByFilters(?User $coach, ?Team $team, ?Facility $facility, ?DateTimeInterface $startDate, ?DateTimeInterface $endDate): array
+    {
+        $qb = $this->createQueryBuilder('t');
+
+        if ($coach) {
+            $qb->andWhere('t.coach = :coach')
+               ->setParameter('coach', $coach);
+        }
+
+        if ($team) {
+            $qb->andWhere('t.team = :team')
+               ->setParameter('team', $team);
+        }
+
+        if ($facility) {
+            $qb->andWhere('t.facility = :facility')
+               ->setParameter('facility', $facility);
+        }
+
+        if ($startDate) {
+            // Trainings that end on or after the start date
+            $qb->andWhere('t.endTime >= :startDate')
+               ->setParameter('startDate', $startDate->format('Y-m-d 00:00:00'));
+        }
+
+        if ($endDate) {
+            // Trainings that start on or before the end date
+            $qb->andWhere('t.startTime <= :endDate')
+               ->setParameter('endDate', $endDate->format('Y-m-d 23:59:59'));
+        }
+
+        $qb->orderBy('t.startTime', 'DESC');
+
+        return $qb->getQuery()->getResult();
     }
 
     //    /**

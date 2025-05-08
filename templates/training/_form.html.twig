@@ -1,9 +1,10 @@
 {{ form_start(form, {'attr': {'class': 'space-y-8 divide-y divide-gray-200'}}) }}
+    {{ form_errors(form, {'attr': {'class': 'p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800'}}) }} {# Global errors #}
     <div class="space-y-8 divide-y divide-gray-200">
         <div>
             <div>
                 <h3 class="text-lg leading-6 font-medium text-gray-900">
-                    {% if form.vars.value.id is defined %}
+                    {% if form.vars.value.id %}
                         Edit Training Session
                     {% else %}
                         New Training Session
@@ -20,51 +21,169 @@
 
             <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
                 <div class="sm:col-span-4">
-                    {{ form_label(form.title, 'Title', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                    {{ form_label(form.title, 'Title', {'label_attr': {'class': 'block text-sm font-medium text-black'}}) }}
                     <div class="mt-1">
-                        {{ form_widget(form.title, {'attr': {'class': 'shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md'}}) }}
+                        {{ form_widget(form.title, {'attr': {'class': 'text-black shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md'}}) }}
                     </div>
                     {{ form_errors(form.title, {'attr': {'class': 'mt-2 text-sm text-red-600'}}) }}
                 </div>
 
                 <div class="sm:col-span-6">
-                    {{ form_label(form.description, 'Description', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                    {{ form_label(form.description, 'Description', {'label_attr': {'class': 'block text-sm font-medium text-black'}}) }}
                     <div class="mt-1">
-                        {{ form_widget(form.description, {'attr': {'class': 'shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md', 'rows': '3'}}) }}
+                        {{ form_widget(form.description, {'attr': {'class': 'text-black shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md', 'rows': '3'}}) }}
                     </div>
                     {{ form_errors(form.description, {'attr': {'class': 'mt-2 text-sm text-red-600'}}) }}
                 </div>
 
                 <div class="sm:col-span-3">
-                    {{ form_label(form.startTime, 'Start Time', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                    {{ form_label(form.startTime, 'Start Time', {'label_attr': {'class': 'block text-sm font-medium text-black'}}) }}
                     <div class="mt-1">
-                        {{ form_widget(form.startTime, {'attr': {'class': 'shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md'}}) }}
+                        {{ form_widget(form.startTime, {'attr': {'class': 'text-black shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md'}}) }}
                     </div>
-                    {{ form_errors(form.startTime, {'attr': {'class': 'mt-2 text-sm text-red-600'}}) }}
+                    <div class="mt-2 text-sm text-red-600">{{ form_errors(form.startTime) }}</div>
                 </div>
 
                 <div class="sm:col-span-3">
-                    {{ form_label(form.endTime, 'End Time', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                    {{ form_label(form.endTime, 'End Time', {'label_attr': {'class': 'block text-sm font-medium text-black'}}) }}
                     <div class="mt-1">
-                        {{ form_widget(form.endTime, {'attr': {'class': 'shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md'}}) }}
+                        {{ form_widget(form.endTime, {'attr': {'class': 'text-black shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md'}}) }}
                     </div>
                     {{ form_errors(form.endTime, {'attr': {'class': 'mt-2 text-sm text-red-600'}}) }}
                 </div>
+
+                <div class="sm:col-span-2">
+                    {{ form_label(form.facility, 'Facility', {'label_attr': {'class': 'block text-sm font-medium text-black'}}) }}
+                    <div class="mt-1">
+                        {{ form_widget(form.facility, {'attr': {'class': 'text-black shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md'}}) }}
+                    </div>
+                    {{ form_errors(form.facility, {'attr': {'class': 'mt-2 text-sm text-red-600'}}) }}
+                </div>
+
+                {% if form.coach is defined %}
+                <div class="sm:col-span-2">
+                    {{ form_label(form.coach, 'Coach', {'label_attr': {'class': 'block text-sm font-medium text-black'}}) }}
+                    <div class="mt-1">
+                        {{ form_widget(form.coach, {'attr': {'class': 'text-black shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md'}}) }}
+                    </div>
+                    {{ form_errors(form.coach, {'attr': {'class': 'mt-2 text-sm text-red-600'}}) }}
+                </div>
+                {% endif %}
+
+                <div class="sm:col-span-2">
+                    {{ form_label(form.team, 'Team', {'label_attr': {'class': 'block text-sm font-medium text-black'}}) }}
+                    <div class="mt-1">
+                        {{ form_widget(form.team, {'attr': {'class': 'text-black shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md'}}) }}
+                    </div>
+                    {{ form_errors(form.team, {'attr': {'class': 'mt-2 text-sm text-red-600'}}) }}
+                </div>
             </div>
+
+            {# Training Exercises Collection - Simplified #}
+            <div class="sm:col-span-6 mt-6 pt-6 border-t border-gray-200" x-data="{
+                itemsContainerId: 'training_exercises_list',
+                prototype: document.getElementById('exercise-prototype-template').innerHTML,
+                currentIndex: {{ form.trainingExercises|length }},
+                addItem: function() {
+                    let newFormHtml = this.prototype.replace(/__name__/g, this.currentIndex);
+                    const newEntryContainer = document.createElement('div');
+                    newEntryContainer.classList.add('exercise-entry', 'p-4', 'border', 'border-gray-300', 'rounded-md', 'mt-3', 'bg-gray-50');
+                    newEntryContainer.innerHTML = newFormHtml;
+
+                    const removeButton = document.createElement('button');
+                    removeButton.type = 'button';
+                    removeButton.textContent = 'Remove Exercise';
+                    removeButton.classList.add('mt-3', 'text-sm', 'font-medium', 'text-red-600', 'hover:text-red-700');
+                    removeButton.addEventListener('click', () => newEntryContainer.remove());
+                    newEntryContainer.appendChild(removeButton);
+                    
+                    document.getElementById(this.itemsContainerId).appendChild(newEntryContainer);
+                    this.currentIndex++;
+                },
+                removeItem: function(event) {
+                    event.target.closest('.exercise-entry').remove();
+                }
+            }">
+                <fieldset class="space-y-1">
+                    <legend class="text-base font-medium text-black">Exercises</legend>
+                    <p class="text-sm text-black">Add at least one exercise for the training session.</p>
+
+                    <div :id="itemsContainerId" class="space-y-4">
+                        {# Render existing exercise forms (if any, e.g., when editing) #}
+                        {% for exerciseForm_item in form.trainingExercises %}
+                            <div class="exercise-entry p-4 border border-gray-300 rounded-md mt-3 bg-gray-50 space-y-3">
+                                <div>
+                                    {{ form_label(exerciseForm_item.exercise, null, {'label_attr': {'class': 'block text-sm font-medium text-black'}}) }}
+                                    {{ form_widget(exerciseForm_item.exercise, {'attr': {'class': 'text-black shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md'}}) }}
+                                    {{ form_errors(exerciseForm_item.exercise, {'attr': {'class': 'mt-1 text-sm text-red-600'}}) }}
+                                </div>
+                                <div>
+                                    {{ form_label(exerciseForm_item.durationMinutes, null, {'label_attr': {'class': 'block text-sm font-medium text-black'}}) }}
+                                    {{ form_widget(exerciseForm_item.durationMinutes, {'attr': {'class': 'text-black shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md'}}) }}
+                                    {{ form_errors(exerciseForm_item.durationMinutes, {'attr': {'class': 'mt-1 text-sm text-red-600'}}) }}
+                                </div>
+                                <div>
+                                    {{ form_label(exerciseForm_item.intensity, null, {'label_attr': {'class': 'block text-sm font-medium text-black'}}) }}
+                                    {{ form_widget(exerciseForm_item.intensity, {'attr': {'class': 'text-black shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md'}}) }}
+                                    {{ form_errors(exerciseForm_item.intensity, {'attr': {'class': 'mt-1 text-sm text-red-600'}}) }}
+                                </div>
+                                <div>
+                                    {{ form_label(exerciseForm_item.notes, null, {'label_attr': {'class': 'block text-sm font-medium text-black'}}) }}
+                                    {{ form_widget(exerciseForm_item.notes, {'attr': {'class': 'text-black shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md', 'rows': 3}}) }}
+                                    {{ form_errors(exerciseForm_item.notes, {'attr': {'class': 'mt-1 text-sm text-red-600'}}) }}
+                                </div>
+                                <button type="button" @click="removeItem($event)" class="mt-3 text-sm font-medium text-red-600 hover:text-red-700">
+                                    Remove This Exercise
+                                </button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="mt-1 text-sm text-red-600">
+                         {{ form_errors(form.trainingExercises) }} {# Errors for the collection itself #}
+                    </div>
+                </fieldset>
+
+                <template id="exercise-prototype-template">
+    {% set prototype_item = form.trainingExercises.vars.prototype %}
+    <div class="space-y-3">
+        <div>
+            {{ form_label(prototype_item.exercise, null, {'label_attr': {'class': 'block text-sm font-medium text-black'}}) }}
+            {{ form_widget(prototype_item.exercise, {'attr': {'class': 'text-black shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md'}}) }}
+            {{ form_errors(prototype_item.exercise, {'attr': {'class': 'mt-1 text-sm text-red-600'}}) }}
+        </div>
+        <div>
+            {{ form_label(prototype_item.durationMinutes, null, {'label_attr': {'class': 'block text-sm font-medium text-black'}}) }}
+            {{ form_widget(prototype_item.durationMinutes, {'attr': {'class': 'text-black shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md'}}) }}
+            {{ form_errors(prototype_item.durationMinutes, {'attr': {'class': 'mt-1 text-sm text-red-600'}}) }}
+        </div>
+        <div>
+            {{ form_label(prototype_item.intensity, null, {'label_attr': {'class': 'block text-sm font-medium text-black'}}) }}
+            {{ form_widget(prototype_item.intensity, {'attr': {'class': 'text-black shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md'}}) }}
+            {{ form_errors(prototype_item.intensity, {'attr': {'class': 'mt-1 text-sm text-red-600'}}) }}
+        </div>
+        <div>
+            {{ form_label(prototype_item.notes, null, {'label_attr': {'class': 'block text-sm font-medium text-black'}}) }}
+            {{ form_widget(prototype_item.notes, {'attr': {'class': 'text-black shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md', 'rows': 3}}) }}
+            {{ form_errors(prototype_item.notes, {'attr': {'class': 'mt-1 text-sm text-red-600'}}) }}
+        </div>
+    </div>
+</template>
+
+                <button type="button" @click="addItem()" class="mt-4 inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-black bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                    Add Exercise
+                </button>
+            </div>
+
         </div>
     </div>
 
     <div class="pt-5">
         <div class="flex justify-end">
-            <a href="{{ path('app_training_index') }}" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+            <a href="{{ path('app_training_index') }}" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-black hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                 Cancel
             </a>
-            <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                {% if form.vars.value.id is defined %}
-                    Update
-                {% else %}
-                    Create
-                {% endif %}
+            <button type="submit" class="{{ button_class | default('ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-blue hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue') }}">
+                {{ button_label | default(form.vars.value.id ? 'Update Training' : 'Create Training') }}
             </button>
         </div>
     </div>

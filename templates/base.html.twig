@@ -68,17 +68,21 @@
 
                             {# Coach-specific links #}
                             {% if is_granted('ROLE_COACH') %}
-                                <a href="#" class="group flex items-center px-3 py-2 text-sm font-medium text-nike-accent hover:bg-nike-highlight rounded-md">
+                                <a href="{{ path('app_training_index') }}" class="group flex items-center px-3 py-2 text-sm font-medium text-nike-accent hover:bg-nike-highlight rounded-md">
                                     <i data-feather="clipboard" class="mr-3 h-5 w-5 text-nike-accent group-hover:text-white"></i>
                                     Training Management
                                 </a>
-                                <a href="#" class="group flex items-center px-3 py-2 text-sm font-medium text-nike-accent hover:bg-nike-highlight rounded-md">
+                                <a href="{{ path('app_exercise_index') }}" class="group flex items-center px-3 py-2 text-sm font-medium text-nike-accent hover:bg-nike-highlight rounded-md">
+                                    <i data-feather="list" class="mr-3 h-5 w-5 text-nike-accent group-hover:text-white"></i>
+                                    Exercise Library
+                                </a>
+                                <a href="{{ path('app_team_index') }}" class="group flex items-center px-3 py-2 text-sm font-medium text-nike-accent hover:bg-nike-highlight rounded-md">
                                     <i data-feather="users" class="mr-3 h-5 w-5 text-nike-accent group-hover:text-white"></i>
                                     Manage Teams
                                 </a>
                             {% endif %}
 
-                                                        {# Manager-specific links #}
+                            {# Manager-specific links #}
                             {% if is_granted('ROLE_MANAGER') %}
                                 <a href="{{ path('app_facility_index') }}" class="group flex items-center px-3 py-2 text-sm font-medium text-nike-accent hover:bg-nike-highlight rounded-md">
                                     <i data-feather="briefcase" class="mr-3 h-5 w-5 text-nike-accent group-hover:text-white"></i>
