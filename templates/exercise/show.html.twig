@@ -1,42 +1,81 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Exercise{% endblock %}
+{% block title %}Exercise: {{ exercise.name | default('Details') }}{% endblock %}
 
 {% block body %}
-    <h1>Exercise</h1>
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-3xl mx-auto bg-white shadow-xl rounded-lg overflow-hidden">
+            <div class="p-6 md:p-8">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 pb-4 border-b border-gray-200">
+                    <h1 class="text-2xl md:text-3xl font-semibold text-gray-800 mb-2 md:mb-0">{{ exercise.name | default('Exercise Details') }}</h1>
+                    <div class="flex space-x-3">
+                        <a href="{{ path('app_exercise_index') }}" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Back to List
+                        </a>
+                        <a href="{{ path('app_exercise_edit', {'id': exercise.id}) }}" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Edit Exercise
+                        </a>
+                    </div>
+                </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ exercise.id }}</td>
-            </tr>
-            <tr>
-                <th>Name</th>
-                <td>{{ exercise.name }}</td>
-            </tr>
-            <tr>
-                <th>Target</th>
-                <td>{{ exercise.target }}</td>
-            </tr>
-            <tr>
-                <th>ApiId</th>
-                <td>{{ exercise.apiId }}</td>
-            </tr>
-            <tr>
-                <th>Instructions</th>
-                <td>{{ exercise.instructions }}</td>
-            </tr>
-            <tr>
-                <th>ImageUrl</th>
-                <td>{{ exercise.imageUrl }}</td>
-            </tr>
-        </tbody>
-    </table>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="md:col-span-1">
+                        {% if exercise.imageUrl %}
+                            {% set rawImageUrl = exercise.imageUrl %}
+                            {% set displayUrl = '' %}
+                            {% if rawImageUrl starts with 'http' %}
+                                {% set displayUrl = rawImageUrl %}
+                            {% elseif rawImageUrl starts with '/' %}
+                                {# Assumes it's already a correct path from public dir, e.g., /uploads/exercises/file.jpg #}
+                                {% set displayUrl = asset(rawImageUrl) %}
+                            {% else %}
+                                {# Assumes it's a filename that needs to be prefixed with the uploads path #}
+                                {% set displayUrl = asset('uploads/exercises/' ~ rawImageUrl) %}
+                            {% endif %}
 
-    <a href="{{ path('app_exercise_index') }}">back to list</a>
+                            {% if displayUrl %}
+                                <img src="{{ displayUrl }}" alt="{{ exercise.name|default('Exercise Image') }}" class="w-full h-auto object-cover rounded-lg shadow-md aspect-square">
+                            {% else %}
+                                {# Fallback if displayUrl couldn't be determined, though rawImageUrl existence implies it should be #}
+                                <div class="w-full h-auto bg-gray-100 rounded-lg shadow-md flex items-center justify-center aspect-square">
+                                    <i data-feather="image" class="w-16 h-16 text-gray-400"></i>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <div class="w-full h-auto bg-gray-100 rounded-lg shadow-md flex items-center justify-center aspect-square">
+                                <i data-feather="image" class="w-16 h-16 text-gray-400"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="md:col-span-2 space-y-4">
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-600">Target Muscle</h3>
+                            <p class="mt-1 text-lg text-gray-900">{{ exercise.target | default('N/A') }}</p>
+                        </div>
+                        {% if exercise.apiId %}
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-600">API ID</h3>
+                            <p class="mt-1 text-gray-700 bg-gray-50 px-2 py-1 rounded-md inline-block">{{ exercise.apiId }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
 
-    <a href="{{ path('app_exercise_edit', {'id': exercise.id}) }}">edit</a>
-
-    {{ include('exercise/_delete_form.html.twig') }}
+                {% if exercise.instructions %}
+                <div class="mb-6">
+                    <h3 class="text-sm font-medium text-gray-600 mb-1">Instructions</h3>
+                    <div class="prose max-w-none text-gray-700">
+                        {{ exercise.instructions | nl2br }}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="mt-8 pt-6 border-t border-gray-200">
+                     <h2 class="text-lg font-semibold text-gray-800 mb-3">Delete Exercise</h2>
+                     <p class="text-sm text-gray-700 mb-4">Proceed with caution. This action cannot be undone.</p>
+                    {{ include('exercise/_delete_form.html.twig', { exercise: exercise }) }}
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
