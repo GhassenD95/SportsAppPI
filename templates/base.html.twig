@@ -10,6 +10,7 @@
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     
     {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
