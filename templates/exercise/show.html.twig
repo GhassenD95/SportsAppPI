@@ -74,7 +74,45 @@
                     </div>
                 </div>
                 {% endif %}
-                
+
+                {# Used In Training Sessions Section #}
+                <div class="mt-8 pt-6 border-t border-gray-200">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4">Used In Training Sessions</h2>
+                    {% if exercise.trainingExercises is not empty and exercise.trainingExercises|length > 0 %}
+                        <ul class="space-y-4">
+                            {% for te in exercise.trainingExercises %}
+                                {% set training = te.training %}
+                                <li class="p-4 bg-gray-50 rounded-lg shadow">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            {% if training %}
+                                                <h4 class="text-md font-semibold text-indigo-600 hover:text-indigo-800">
+                                                    <a href="{{ path('app_training_show', {'id': training.id}) }}">{{ training.title | default('Training Session') }}</a>
+                                                </h4>
+                                                <p class="text-sm text-gray-600">Date: {{ training.startTime ? training.startTime|date('Y-m-d H:i') : 'N/A' }}</p>
+                                            {% else %}
+                                                <h4 class="text-md font-semibold text-gray-700">Training information unavailable</h4>
+                                            {% endif %}
+                                        </div>
+                                        <span class="text-sm text-gray-500">Intensity: <span class="font-medium text-gray-700">{{ te.intensity | default('N/A') }}</span></span>
+                                    </div>
+                                    <div class="mt-2">
+                                        <p class="text-sm text-gray-600">Duration: <span class="font-medium text-gray-800">{{ te.durationMinutes | default('N/A') }} minutes</span></p>
+                                        {% if te.notes %}
+                                            <div class="mt-1">
+                                                <p class="text-sm font-medium text-gray-700">Coach Notes for this exercise:</p>
+                                                <p class="text-sm text-gray-800 pl-2">{{ te.notes|nl2br }}</p>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-gray-600">This exercise has not been assigned to any training sessions yet.</p>
+                    {% endif %}
+                </div>
+
                 <div class="mt-8 pt-6 border-t border-gray-200">
                      <h2 class="text-lg font-semibold text-gray-800 mb-3">Delete Exercise</h2>
                      <p class="text-sm text-gray-700 mb-4">Proceed with caution. This action cannot be undone.</p>

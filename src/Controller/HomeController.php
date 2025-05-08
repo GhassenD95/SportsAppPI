@@ -55,8 +55,7 @@ final class HomeController extends AbstractController
         if ($this->isGranted('ROLE_ATHLETE') && !$this->isGranted('ROLE_COACH') && !$this->isGranted('ROLE_MANAGER')) {
             $dashboardData = $this->getAthleteDashboardData($user);
         } elseif ($this->isGranted('ROLE_COACH')) {
-            // Placeholder for Coach Data Fetching - Keep previous logic if needed
-            // $dashboardData = $this->getCoachDashboardData($user);
+            $dashboardData = $this->getCoachDashboardData($user);
         } elseif ($this->isGranted('ROLE_MANAGER')) {
             // Placeholder for Manager Data Fetching - Keep previous logic if needed
             // $dashboardData = $this->getManagerDashboardData($user);
@@ -102,14 +101,26 @@ final class HomeController extends AbstractController
         ];
     }
 
-    // Placeholder for getCoachDashboardData - Add back previous implementation if needed
-    /*
-    private function getCoachDashboardData(User $user): array
+    private function getCoachDashboardData(User $coach): array
     {
-        // ... implementation from previous session ...
-        return [];
+        $upcomingTrainings = $this->trainingRepository->findUpcomingByCoach($coach, 5);
+        $trainingsThisMonthCount = $this->trainingRepository->countTrainingsThisMonthByCoach($coach);
+        $topExercisesRaw = $this->trainingRepository->findExercisesByCoachWithUsageCount($coach, 5);
+
+        $topExercisesLabels = [];
+        $topExercisesData = [];
+        foreach ($topExercisesRaw as $exerciseStat) {
+            $topExercisesLabels[] = $exerciseStat['name'];
+            $topExercisesData[] = $exerciseStat['usageCount'];
+        }
+
+        return [
+            'coach_upcoming_trainings' => $upcomingTrainings,
+            'coach_trainings_this_month_count' => $trainingsThisMonthCount,
+            'coach_top_exercises_labels' => $topExercisesLabels,
+            'coach_top_exercises_data' => $topExercisesData,
+        ];
     }
-    */
 
     // Placeholder for getManagerDashboardData - Add back previous implementation if needed
     /*

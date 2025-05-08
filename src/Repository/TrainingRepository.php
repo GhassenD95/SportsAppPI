@@ -156,6 +156,51 @@ class TrainingRepository extends ServiceEntityRepository
     //        ;
     //    }
 
+    public function findUpcomingByCoach(User $coach, int $limit = 5): array
+    {
+        return $this->createQueryBuilder('t')
+            ->andWhere('t.coach = :coach')
+            ->andWhere('t.startTime > :now')
+            ->setParameter('coach', $coach)
+            ->setParameter('now', new \DateTime())
+            ->orderBy('t.startTime', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function countTrainingsThisMonthByCoach(User $coach): int
+    {
+        $startOfMonth = new \DateTime('first day of this month 00:00:00');
+        $endOfMonth = new \DateTime('last day of this month 23:59:59');
+
+        return (int) $this->createQueryBuilder('t')
+            ->select('COUNT(t.id)')
+            ->andWhere('t.coach = :coach')
+            ->andWhere('t.startTime BETWEEN :startOfMonth AND :endOfMonth')
+            ->setParameter('coach', $coach)
+            ->setParameter('startOfMonth', $startOfMonth)
+            ->setParameter('endOfMonth', $endOfMonth)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function findExercisesByCoachWithUsageCount(User $coach, int $limit = 5): array
+    {
+        return $this->getEntityManager()->createQuery(
+            'SELECT e.name, COUNT(te.id) as usageCount ' .
+            'FROM App\Entity\Training t ' .
+            'JOIN t.trainingExercises te ' .
+            'JOIN te.exercise e ' .
+            'WHERE t.coach = :coach ' .
+            'GROUP BY e.id, e.name ' .
+            'ORDER BY usageCount DESC'
+        )
+        ->setParameter('coach', $coach)
+        ->setMaxResults($limit)
+        ->getResult();
+    }
+
     /**
      * Find the single next upcoming training session for a given team ID.
      */
