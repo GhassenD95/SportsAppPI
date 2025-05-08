@@ -8,6 +8,7 @@ use App\Repository\FacilityRepository;
 use App\Repository\TeamRepository;
 use App\Repository\TrainingRepository;
 use App\Repository\UserRepository;
+use App\Service\WeatherService; // Add this line
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -122,10 +123,21 @@ final class TrainingController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_training_show', methods: ['GET'])]
-    public function show(Training $training): Response
+    public function show(Training $training, WeatherService $weatherService): Response // Inject WeatherService
     {
+        $weatherData = null;
+        if ($training->getFacility() && $training->getFacility()->getLocation()) {
+            $location = $training->getFacility()->getLocation();
+            if (!empty($location)) {
+                 $weatherData = $weatherService->getCurrentWeather($location);
+            }
+        } else {
+            $weatherData = ['error' => 'Facility location not available for weather.'];
+        }
+
         return $this->render('training/show.html.twig', [
             'training' => $training,
+            'weather' => $weatherData, // Pass weather data to template
         ]);
     }
 

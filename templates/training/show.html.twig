@@ -91,5 +91,48 @@
         {% endif %}
     </div>
 
+    {% if weather %}
+        <div class="mt-8 mb-4 p-4 bg-white shadow overflow-hidden sm:rounded-lg">
+            <div class="px-4 py-5 sm:px-6">
+                 <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    {% if weather.error is defined and weather.error %}
+                        Weather Status for {{ training.facility.name ?: 'the facility location' }}
+                    {% else %}
+                        Weather at {{ (weather.city is defined and weather.city ? weather.city : (training.facility.name ?: 'the facility location')) }}
+                    {% endif %}
+                </h3>
+            </div>
+            <div class="border-t border-gray-200 px-4 py-5 sm:p-0">
+                 <dl class="sm:divide-y sm:divide-gray-200">
+                    <div class="py-3 sm:py-5 sm:px-6">
+                        {% if weather.error is defined and weather.error %}
+                            <p class="text-sm text-red-600">Could not load weather information: {{ weather.error }}</p>
+                            {% if weather.details is defined and weather.details %}
+                                <p class="text-xs text-red-500">Details: {{ weather.details }}</p>
+                            {% endif %}
+                        {% elseif weather.temperature is defined and weather.temperature is not null %}
+                            <div class="flex items-center">
+                                {% if weather.icon %}
+                                    <img src="http://openweathermap.org/img/wn/{{ weather.icon }}@2x.png" alt="{{ weather.description }}" class="w-12 h-12 mr-3 rtl:mr-0 rtl:ml-3">
+                                {% endif %}
+                                <div>
+                                    <p class="text-lg text-gray-900">{{ weather.temperature|round }}°C
+                                        <span class="text-gray-600 text-base">(Feels like {{ weather.feels_like|round }}°C)</span>
+                                    </p>
+                                    <p class="text-sm text-gray-600 capitalize">{{ weather.description }}</p>
+                                    {% if weather.city and weather.country %}
+                                         <p class="text-xs text-gray-500">{{ weather.city }}, {{ weather.country }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% else %}
+                             <p class="text-sm text-orange-500">Weather data is incomplete or unavailable for this location.</p>
+                        {% endif %}
+                    </div>
+                </dl>
+            </div>
+        </div>
+    {% endif %}
+
     {{ include('training/_delete_form.html.twig') }}
 {% endblock %}

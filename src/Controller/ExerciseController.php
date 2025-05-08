@@ -6,10 +6,12 @@ use App\Entity\Exercise;
 use App\Form\ExerciseType;
 use App\Repository\ExerciseRepository;
 use App\Service\ExerciseApiService;
+use App\Service\YouTubeService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -214,5 +216,27 @@ final class ExerciseController extends AbstractController
         }
 
         return $this->redirectToRoute('app_exercise_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{id}/youtube-search', name: 'app_exercise_youtube_search', methods: ['GET'])]
+    public function youtubeSearch(Exercise $exercise, YouTubeService $youtubeService): JsonResponse
+    {
+        if (empty($exercise->getName())) {
+            return new JsonResponse(['error' => 'Exercise name is missing.'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $videos = $youtubeService->searchVideos($exercise->getName() . ' exercise tutorial', 1); // Search for "Exercise Name exercise tutorial"
+
+        if (isset($videos['error'])) {
+            // Log the error details if possible, e.g., $this->logger->error('YouTube API Error: ' . $videos['details']);
+            return new JsonResponse(['error' => 'Failed to fetch videos from YouTube.', 'details' => $videos['details'] ?? 'No details'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        if (empty($videos)) {
+            return new JsonResponse(['videos' => [], 'message' => 'No videos found.'], Response::HTTP_OK);
+        }
+
+        // Return only the first video's ID for simplicity, or you can return the whole list
+        return new JsonResponse(['videoId' => $videos[0]['id'] ?? null]);
     }
 }
